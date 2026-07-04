@@ -307,7 +307,17 @@ body,
 }
 
 .nav-mark small {
-  color: var(--nav-subtle-color);
+  margin-top: 4px;
+  color: #a15f12;
+  font-size: clamp(0.66rem, 0.76vw, 0.78rem);
+  line-height: 1.12;
+  letter-spacing: 0.045em;
+  text-shadow: 0 0 18px rgba(232, 196, 112, 0.24);
+}
+
+body[data-room-tone="dark"] .nav-mark small {
+  color: var(--gold);
+  text-shadow: 0 0 18px rgba(232, 196, 112, 0.45);
 }
 
 .site-nav nav {
@@ -1296,7 +1306,173 @@ body.home-intro-active .hero-space.is-intro-visible {
   opacity: var(--hero-copy-opacity);
   padding-top: 0;
   transform: translateX(-50%);
-  transition: opacity 420ms ease-out;
+  transition: opacity 1100ms ease-in-out;
+}
+
+.text-note-field {
+  position: absolute;
+  inset: -24px -58px -18px;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.text-note {
+  position: absolute;
+  width: var(--note-size, clamp(18px, 2vw, 30px));
+  height: auto;
+  opacity: 0.58;
+  filter:
+    drop-shadow(0 8px 12px rgba(59, 40, 27, 0.12))
+    drop-shadow(0 0 12px rgba(232, 196, 112, 0.22));
+  transform: rotate(var(--note-rotate, 0deg)) scale(var(--note-scale, 1));
+  transform-origin: 50% 50%;
+  animation: textNoteBlink var(--note-duration, 2.8s) ease-in-out infinite;
+  animation-delay: var(--note-delay, 0s);
+}
+
+.text-note-1 {
+  --note-rotate: -14deg;
+  --note-scale: 0.9;
+  --note-size: clamp(14px, 1.35vw, 22px);
+  --note-duration: 3.2s;
+  left: 2%;
+  top: 12%;
+}
+
+.text-note-2 {
+  --note-rotate: 10deg;
+  --note-scale: 1.08;
+  --note-size: clamp(15px, 1.45vw, 24px);
+  --note-duration: 3.6s;
+  --note-delay: 0.55s;
+  right: 4%;
+  top: 2%;
+}
+
+.text-note-3 {
+  --note-rotate: 18deg;
+  --note-scale: 0.78;
+  --note-size: clamp(12px, 1.15vw, 18px);
+  --note-duration: 2.9s;
+  --note-delay: 1.1s;
+  right: 18%;
+  bottom: 4%;
+}
+
+.text-note-4 {
+  --note-rotate: -8deg;
+  --note-scale: 0.94;
+  --note-size: clamp(13px, 1.25vw, 21px);
+  --note-duration: 4.4s;
+  --note-delay: 0.2s;
+  left: 18%;
+  bottom: 8%;
+}
+
+.text-note-5 {
+  --note-rotate: 12deg;
+  --note-scale: 1.18;
+  --note-size: clamp(14px, 1.35vw, 23px);
+  --note-duration: 5.2s;
+  --note-delay: 1.7s;
+  left: 24%;
+  top: -8%;
+  opacity: 0.44;
+}
+
+.text-note-6 {
+  --note-rotate: -18deg;
+  --note-scale: 0.72;
+  --note-size: clamp(11px, 1.05vw, 17px);
+  --note-duration: 2.35s;
+  --note-delay: 0.9s;
+  right: 34%;
+  top: 18%;
+}
+
+.text-note-7 {
+  --note-rotate: 24deg;
+  --note-scale: 0.82;
+  --note-size: clamp(11px, 1.05vw, 18px);
+  --note-duration: 3.85s;
+  --note-delay: 2.05s;
+  left: 48%;
+  bottom: -6%;
+  opacity: 0.5;
+}
+
+.story-copy .text-note-field {
+  inset: -28px -68px -16px;
+}
+
+.story-copy .text-note-1 {
+  left: 8%;
+  top: 4%;
+}
+
+.story-copy .text-note-2 {
+  right: 8%;
+  top: 10%;
+}
+
+.story-copy .text-note-3 {
+  right: 21%;
+  bottom: 0;
+}
+
+.story-copy .text-note-4 {
+  left: 4%;
+  bottom: 18%;
+}
+
+.story-copy .text-note-5 {
+  left: 14%;
+  top: -12%;
+}
+
+.story-copy .text-note-6 {
+  right: 30%;
+  top: 0;
+}
+
+.story-copy .text-note-7 {
+  left: 64%;
+  bottom: -8%;
+}
+
+@keyframes textNoteBlink {
+  0%,
+  100% {
+    opacity: 0.28;
+    transform: translateY(2px) rotate(var(--note-rotate, 0deg)) scale(calc(var(--note-scale, 1) * 0.92));
+  }
+
+  48% {
+    opacity: 0.74;
+    transform: translateY(-3px) rotate(calc(var(--note-rotate, 0deg) + 4deg)) scale(var(--note-scale, 1));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .text-note {
+    animation: none;
+    opacity: 0.42;
+  }
+}
+
+@media (max-width: 760px) {
+  .text-note-field {
+    inset: -20px -20px -12px;
+  }
+
+  .text-note-5,
+  .text-note-7 {
+    display: none;
+  }
+
+  .text-note {
+    --note-size: clamp(13px, 4vw, 22px);
+  }
 }
 
 .hero.has-image-overview .hero-copy {
@@ -1428,7 +1604,7 @@ h3 {
   opacity: var(--story-copy-opacity);
   pointer-events: none;
   text-align: center;
-  transition: opacity 480ms ease-out;
+  transition: opacity 1300ms ease-in-out;
 }
 
 .story-copy {

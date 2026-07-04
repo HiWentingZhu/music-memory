@@ -1063,10 +1063,8 @@ function initHomepageIntro() {
   if (!spaces.length || !journeyLine || !textNode) return;
 
   const introText = textNode.textContent.trim().replace(/\s+/g, " ");
-  const replayRequested = new URLSearchParams(window.location.search).has("introReplay");
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const introSeen = readStorageFlag(HOMEPAGE_INTRO_KEY);
-  if (reduceMotion || (introSeen && !replayRequested)) {
+  if (reduceMotion) {
     textNode.textContent = introText;
     return;
   }
@@ -1104,7 +1102,6 @@ function initHomepageIntro() {
     textNode.textContent = introText;
     journeyLine.classList.remove("is-typing");
     document.body.classList.remove("home-intro-active");
-    writeStorageFlag(HOMEPAGE_INTRO_KEY);
     window.dispatchEvent(new CustomEvent(HOMEPAGE_INTRO_DONE_EVENT));
   };
 
@@ -1116,20 +1113,26 @@ function initHomepageScrollText() {
   const story = document.querySelector("#story");
   if (!hero || !story) return;
 
-  const updateTextFade = () => {
-    const viewportHeight = Math.max(1, window.innerHeight || document.documentElement.clientHeight);
-    const maxScroll = document.documentElement.scrollHeight - viewportHeight;
-    const scrollProgress = clamp01(window.scrollY / maxScroll);
-    const heroFadeProgress = smoothStep(fadeRange(scrollProgress, 0.06, 0.55));
-    const storyFadeProgress = smoothStep(fadeRange(scrollProgress, 0.58, 0.98));
+  const textChangeDelay = 5500;
+  let isShowingStoryText = false;
 
-    document.documentElement.style.setProperty("--hero-copy-opacity", String(1 - heroFadeProgress));
-    document.documentElement.style.setProperty("--story-copy-opacity", String(storyFadeProgress));
+  const setTextState = (showStoryText) => {
+    isShowingStoryText = showStoryText;
+    document.documentElement.style.setProperty("--hero-copy-opacity", showStoryText ? "0" : "1");
+    document.documentElement.style.setProperty("--story-copy-opacity", showStoryText ? "1" : "0");
   };
 
-  updateTextFade();
-  window.addEventListener("scroll", updateTextFade, { passive: true });
-  window.addEventListener("resize", updateTextFade);
+  const revealStoryTextOnScroll = () => {
+    if (window.scrollY > 24) {
+      setTextState(true);
+    }
+  };
+
+  setTextState(false);
+  window.setInterval(() => {
+    setTextState(!isShowingStoryText);
+  }, textChangeDelay);
+  window.addEventListener("scroll", revealStoryTextOnScroll, { passive: true });
 }
 
 async function initRoomPage() {
