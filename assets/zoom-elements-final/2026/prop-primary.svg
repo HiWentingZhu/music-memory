@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="200" viewBox="0 0 260 200">
+
+<rect x="12" y="92" width="220" height="88" rx="12" fill="#15171d" stroke="#f3c45b" stroke-width="5"/>
+<rect x="40" y="42" width="170" height="58" rx="8" fill="#dbeef0" stroke="#7ccfea" stroke-width="4"/>
+<circle cx="60" cy="128" r="28" fill="#7ccfea" opacity="0.35"/>
+<path d="M30 70 C84 30 120 100 180 54 S230 90 250 42" fill="none" stroke="#7ccfea" stroke-width="9" opacity="0.75"/>
+<text x="122" y="141" text-anchor="middle" fill="#f8e7ad" font-family="Arial" font-size="22" font-weight="800">Horizon Deck</text>
+
+</svg>

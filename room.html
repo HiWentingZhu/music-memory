@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Memory Space 2022-2026</title>
+    <link rel="stylesheet" href="styles.css?v=memory-control-no-menu-padding-1" />
+    <script>
+      if (!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+        document.documentElement.classList.add("has-treble-cursor");
+      }
+    </script>
+  </head>
+  <body class="has-museum" data-page="room">
+    <header class="site-nav">
+      <div class="nav-left">
+        <a class="nav-years" href="index.html#home">2022-2026</a>
+        <a class="nav-mark" href="index.html#home" aria-label="Linger home">
+          <span>Wenting's Music Memory</span>
+        </a>
+      </div>
+      <div class="nav-right">
+        <nav aria-label="Primary navigation">
+          <a href="index.html#home">Home</a>
+        </nav>
+        <a class="nav-why" href="index.html#story">Why This Museum Exists</a>
+      </div>
+    </header>
+
+    <main>
+      <section id="room" class="zoom-shell room-page-shell" aria-label="Selected yearly memory room">
+        <div class="room-heading">
+          <div>
+            <p class="eyebrow">Zoom-in space</p>
+            <h2 id="roomTitle">Loading room</h2>
+            <div id="personaTags" class="tag-cloud room-heading-tags" aria-label="Space hashtags"></div>
+            <p id="roomSummary" class="room-summary"></p>
+          </div>
+        </div>
+        <div id="zoomRoom" class="zoom-room" aria-live="polite"></div>
+      </section>
+
+      <audio id="roomAudio" preload="metadata"></audio>
+    </main>
+
+    <script src="assets/audio/manifest.js?v=year-audio-1"></script>
+    <script src="assets/audio/title-translations.js?v=title-translations-1"></script>
+    <script src="space-hit-test.js?v=direct-year-play-49"></script>
+    <script src="app.js?v=direct-year-play-49"></script>
+  </body>
+</html>

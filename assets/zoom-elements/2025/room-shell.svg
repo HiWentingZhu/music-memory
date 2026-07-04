@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1680" height="945" viewBox="0 0 1680 945">
+
+<defs>
+  <linearGradient id="wall" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#1c2030"/><stop offset="1" stop-color="#121318"/></linearGradient>
+  <linearGradient id="shell" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#252a3a"/><stop offset="1" stop-color="#9b8062"/></linearGradient>
+</defs>
+<path d="M75 35 Q840 -50 1605 35 L1570 805 Q840 900 110 805 Z" fill="url(#shell)" opacity="0.96"/>
+<path d="M115 90 Q840 12 1565 90 L1512 705 Q840 785 168 705 Z" fill="url(#wall)" stroke="#0d0f14" stroke-width="18" opacity="0.98"/>
+<path d="M175 560 Q840 660 1505 560 L1512 705 Q840 785 168 705 Z" fill="#11131a" opacity="0.94"/>
+<path d="M115 90 Q840 12 1565 90" fill="none" stroke="rgba(255,255,255,0.36)" stroke-width="16"/>
+<path d="M168 705 Q840 785 1512 705" fill="none" stroke="#ff4f9a" stroke-width="5" opacity="0.45"/>
+<text x="840" y="105" text-anchor="middle" fill="#ff4f9a" font-family="Arial, sans-serif" font-size="42" font-weight="800">2025 Neon Chamber</text>
+
+</svg>

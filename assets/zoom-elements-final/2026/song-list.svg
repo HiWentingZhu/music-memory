@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="180" viewBox="0 0 260 180">
+<rect x="4" y="4" width="252" height="172" rx="18" fill="#101318" stroke="#f3c45b" stroke-width="5"/><text x="130" y="32" text-anchor="middle" fill="#f8e7ad" font-family="Arial" font-size="18" font-weight="800">SONG LIST</text><text x="24" y="64" fill="#f7e8b8" font-family="Arial, sans-serif" font-size="16" font-weight="700">1. Track 01</text>
+<text x="24" y="88" fill="#f7e8b8" font-family="Arial, sans-serif" font-size="16" font-weight="700">2. Track 02</text>
+<text x="24" y="112" fill="#f7e8b8" font-family="Arial, sans-serif" font-size="16" font-weight="700">3. Track 03</text>
+<text x="24" y="136" fill="#f7e8b8" font-family="Arial, sans-serif" font-size="16" font-weight="700">4. Track 04</text>
+<text x="24" y="160" fill="#f7e8b8" font-family="Arial, sans-serif" font-size="16" font-weight="700">5. Track 05</text> 
+</svg>

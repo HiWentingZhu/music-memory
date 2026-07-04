@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Static Image To Dynamic GIF - Method Comparison</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      body {
+        background: #f6e8d1;
+      }
+
+      .compare-page {
+        min-height: 100vh;
+        padding: 104px clamp(18px, 4vw, 56px) 48px;
+      }
+
+      .compare-header {
+        width: min(1280px, 100%);
+        margin: 0 auto 22px;
+        display: grid;
+        gap: 8px;
+      }
+
+      .compare-header h1 {
+        max-width: 900px;
+        font-size: clamp(2rem, 4vw, 4.4rem);
+        line-height: 1.03;
+      }
+
+      .compare-header p {
+        max-width: 760px;
+        margin: 0;
+        color: var(--brown-soft);
+        line-height: 1.65;
+      }
+
+      .method-grid {
+        width: min(1280px, 100%);
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .method-card {
+        overflow: hidden;
+        border: 1px solid rgba(59, 40, 27, 0.16);
+        border-radius: 8px;
+        background: rgba(255, 249, 237, 0.78);
+        box-shadow: 0 18px 60px rgba(28, 34, 48, 0.12);
+      }
+
+      .method-stage {
+        position: relative;
+        aspect-ratio: 1680 / 945;
+        overflow: hidden;
+        background: #121318;
+      }
+
+      .method-stage img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .method-body {
+        display: grid;
+        gap: 8px;
+        padding: 14px 16px 16px;
+      }
+
+      .method-body h2 {
+        font-size: clamp(1.35rem, 2.1vw, 2rem);
+      }
+
+      .method-body p {
+        margin: 0;
+        color: var(--brown-soft);
+        line-height: 1.55;
+      }
+
+      .method-note {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 4px;
+      }
+
+      .method-note span {
+        border: 1px solid rgba(59, 40, 27, 0.14);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.52);
+        padding: 5px 9px;
+        color: var(--brown);
+        font-family: var(--font-hud);
+        font-weight: 700;
+      }
+
+      .ffmpeg img {
+        animation: ffmpegMotion 3.2s ease-in-out infinite;
+      }
+
+      .ffmpeg::after,
+      .gifski::after,
+      .imagemagick::after,
+      .ai-motion::after {
+        position: absolute;
+        inset: 0;
+        content: "";
+        pointer-events: none;
+      }
+
+      .ffmpeg::after {
+        background:
+          linear-gradient(100deg, transparent 0 30%, rgba(0, 184, 217, 0.22) 38%, transparent 48% 58%, rgba(255, 79, 154, 0.24) 66%, transparent 76%),
+          radial-gradient(circle at 48% 48%, rgba(255, 79, 154, 0.24), transparent 30%);
+        mix-blend-mode: screen;
+        animation: controlledSweep 2.4s ease-in-out infinite;
+      }
+
+      .gifski img {
+        animation: gifskiMotion 3.2s ease-in-out infinite;
+        filter: saturate(1.08) contrast(1.03);
+      }
+
+      .gifski::after {
+        background:
+          linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent),
+          radial-gradient(circle at 52% 54%, rgba(231, 242, 74, 0.18), transparent 26%);
+        mix-blend-mode: screen;
+        animation: cleanColorPulse 2.8s ease-in-out infinite;
+      }
+
+      .imagemagick img {
+        animation: steppedFrames 1.4s steps(4) infinite;
+        filter: saturate(0.94) contrast(1.08);
+      }
+
+      .imagemagick::after {
+        background:
+          repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.05) 0 2px, transparent 2px 8px),
+          linear-gradient(90deg, transparent, rgba(255, 79, 154, 0.16), transparent);
+        mix-blend-mode: screen;
+        animation: steppedGlow 1.4s steps(4) infinite;
+      }
+
+      .ai-motion img {
+        animation: aiWarp 4.2s ease-in-out infinite;
+        filter: saturate(1.15);
+      }
+
+      .ai-motion::after {
+        background:
+          radial-gradient(circle at 28% 26%, rgba(0, 184, 217, 0.28), transparent 20%),
+          radial-gradient(circle at 64% 32%, rgba(255, 79, 154, 0.34), transparent 24%),
+          linear-gradient(120deg, transparent 0 35%, rgba(231, 242, 74, 0.18) 46%, transparent 58%);
+        mix-blend-mode: screen;
+        animation: aiGeneratedShift 4.2s ease-in-out infinite;
+      }
+
+      @keyframes ffmpegMotion {
+        0%,
+        100% {
+          transform: scale(1) translate(0, 0);
+        }
+
+        50% {
+          transform: scale(1.025) translate(-0.6%, -0.4%);
+        }
+      }
+
+      @keyframes controlledSweep {
+        0%,
+        100% {
+          opacity: 0.42;
+          transform: translateX(-3%);
+        }
+
+        50% {
+          opacity: 0.78;
+          transform: translateX(4%);
+        }
+      }
+
+      @keyframes gifskiMotion {
+        0%,
+        100% {
+          transform: scale(1) translateY(0);
+        }
+
+        50% {
+          transform: scale(1.018) translateY(-0.35%);
+        }
+      }
+
+      @keyframes cleanColorPulse {
+        0%,
+        100% {
+          opacity: 0.36;
+          transform: translateX(-8%);
+        }
+
+        50% {
+          opacity: 0.7;
+          transform: translateX(8%);
+        }
+      }
+
+      @keyframes steppedFrames {
+        0% {
+          transform: scale(1) translate(0, 0);
+        }
+
+        100% {
+          transform: scale(1.035) translate(-1%, -0.6%);
+        }
+      }
+
+      @keyframes steppedGlow {
+        0% {
+          opacity: 0.22;
+          transform: translateX(-8%);
+        }
+
+        100% {
+          opacity: 0.64;
+          transform: translateX(8%);
+        }
+      }
+
+      @keyframes aiWarp {
+        0%,
+        100% {
+          transform: scale(1.01) rotate(0deg);
+          filter: saturate(1.1) hue-rotate(0deg);
+        }
+
+        45% {
+          transform: scale(1.045) rotate(-0.25deg);
+          filter: saturate(1.24) hue-rotate(-5deg);
+        }
+
+        70% {
+          transform: scale(1.03) rotate(0.2deg);
+          filter: saturate(1.18) hue-rotate(4deg);
+        }
+      }
+
+      @keyframes aiGeneratedShift {
+        0%,
+        100% {
+          opacity: 0.44;
+          transform: translate(-2%, 1%) scale(1);
+        }
+
+        50% {
+          opacity: 0.82;
+          transform: translate(3%, -2%) scale(1.08);
+        }
+      }
+
+      @media (max-width: 900px) {
+        .method-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .compare-page {
+          padding-top: 92px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-nav">
+      <a class="nav-mark" href="index.html#home" aria-label="Linger home">
+        <span>Linger</span>
+        <small>Music Memory</small>
+      </a>
+      <nav aria-label="Primary navigation">
+        <a href="room.html?year=2025">2025 Room</a>
+        <a href="index.html#home">Museum</a>
+      </nav>
+      <a class="nav-years" href="index.html#home">2022-2026</a>
+    </header>
+
+    <main class="compare-page">
+      <section class="compare-header">
+        <p class="eyebrow">Static image to dynamic GIF</p>
+        <h1>Four ways the same room can become animated</h1>
+        <p>
+          These previews use the approved 2025 room image. They show the kind of output each
+          workflow tends to produce, before choosing a real export pipeline.
+        </p>
+      </section>
+
+      <section class="method-grid" aria-label="Animation method comparison">
+        <article class="method-card">
+          <div class="method-stage ffmpeg">
+            <img src="assets/music-space-zoom-2025-final-neon-chamber.png" alt="FFmpeg style preview" />
+          </div>
+          <div class="method-body">
+            <p class="eyebrow">1. FFmpeg + scripted frames</p>
+            <h2>Controlled motion</h2>
+            <p>Best when we want predictable movement: gentle zoom, light sweep, rain, glow, pulse, or parallax-like movement.</p>
+            <div class="method-note">
+              <span>Most controllable</span>
+              <span>Good for final art</span>
+              <span>Needs frames</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="method-card">
+          <div class="method-stage gifski">
+            <img src="assets/music-space-zoom-2025-final-neon-chamber.png" alt="gifski style preview" />
+          </div>
+          <div class="method-body">
+            <p class="eyebrow">2. gifski encoder</p>
+            <h2>Cleaner GIF quality</h2>
+            <p>gifski does not invent motion by itself. It makes an existing frame sequence look smoother and cleaner as a GIF.</p>
+            <div class="method-note">
+              <span>Best colors</span>
+              <span>Smoother GIF</span>
+              <span>Still needs frames</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="method-card">
+          <div class="method-stage imagemagick">
+            <img src="assets/music-space-zoom-2025-final-neon-chamber.png" alt="ImageMagick style preview" />
+          </div>
+          <div class="method-body">
+            <p class="eyebrow">3. ImageMagick</p>
+            <h2>Simple frame stepping</h2>
+            <p>Good for quick experiments, resizing, looping, and simple frame assembly. Motion can feel more mechanical.</p>
+            <div class="method-note">
+              <span>Quick</span>
+              <span>Simple</span>
+              <span>Less polished</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="method-card">
+          <div class="method-stage ai-motion">
+            <img src="assets/music-space-zoom-2025-final-neon-chamber.png" alt="AI motion style preview" />
+          </div>
+          <div class="method-body">
+            <p class="eyebrow">4. ComfyUI / AnimateDiff</p>
+            <h2>AI-interpreted motion</h2>
+            <p>Best for expressive animation, but it may change details, faces, wall text, or layout unless constrained carefully.</p>
+            <div class="method-note">
+              <span>Most alive</span>
+              <span>Least predictable</span>
+              <span>Heavier setup</span>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>

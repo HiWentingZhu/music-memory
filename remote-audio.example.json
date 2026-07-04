@@ -1,0 +1,14 @@
+{
+  "files": [
+    {
+      "name": "Artist - Song title.mp3",
+      "path": "homepage music/Artist - Song title.mp3",
+      "url": "https://example.com/direct-download-or-playable-audio-url.mp3"
+    },
+    {
+      "name": "Artist - Year song.mp3",
+      "path": "2026 music/Artist - Year song.mp3",
+      "url": "https://example.com/direct-download-or-playable-audio-url.mp3"
+    }
+  ]
+}

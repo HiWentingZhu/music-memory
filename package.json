@@ -1,0 +1,18 @@
+{
+  "name": "linger-music-memory",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "build:data": "node tools/build-qq-music-database.js && node tools/export-music-design-database.js",
+    "export:data": "node tools/export-music-design-database.js",
+    "build:audio": "node tools/build-audio-manifest.js",
+    "convert:mp3": "node tools/convert-audio-to-mp3.js",
+    "build:artist-images": "node tools/build-artist-image-manifest.js",
+    "build:artist-info": "node tools/build-artist-info-manifest.js",
+    "check:room-assets": "node tools/check-room-assets.js"
+  }
+}

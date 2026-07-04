@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wenting's Music Memory</title>
+    <link rel="stylesheet" href="styles.css?v=centered-two-line-brand-1" />
+    <script>
+      if (!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+        document.documentElement.classList.add("has-treble-cursor");
+      }
+    </script>
+  </head>
+  <body class="is-empty" data-page="overview">
+    <header class="site-nav">
+      <div class="nav-left">
+        <a class="nav-years" href="#home">2022-2026</a>
+        <a class="nav-mark" href="#home" aria-label="Linger home">
+          <span>Wenting's Music Memory</span>
+        </a>
+      </div>
+      <div class="nav-right">
+        <nav aria-label="Primary navigation">
+          <a href="#home">Home</a>
+        </nav>
+        <a class="nav-why" href="#story">Why This Museum Exists</a>
+      </div>
+    </header>
+
+    <main>
+      <section id="home" class="hero">
+        <div class="hero-spaces" aria-label="Music memory spaces">
+          <a class="hero-space" style="--x: 0%; --y: 29.8%; --w: 24.7%; --r: -7deg; --z: 4; --label-x: 70px; --label-y: -40px; --label-r: -22deg" href="room.html?year=2022" aria-label="Open 2022 Rain Archive">
+            <img src="assets/music-space-overview-2022.png?v=fan2" alt="" />
+            <span class="hero-space-label"><strong>2022</strong><span>Rain Archive</span></span>
+          </a>
+          <a class="hero-space" style="--x: 20.1%; --y: 21.2%; --w: 21%; --r: -4.5deg; --z: 2; --label-x: 27px; --label-y: -10px; --label-r: -6deg" href="room.html?year=2023" aria-label="Open 2023 Encore Stage">
+            <img src="assets/music-space-overview-2023.png?v=fan2" alt="" />
+            <span class="hero-space-label"><strong>2023</strong><span>Encore Stage</span></span>
+          </a>
+          <a class="hero-space" style="--x: 41.2%; --y: 18%; --w: 17.8%; --r: -1deg; --z: 3; --label-x: -10px; --label-y: -4px; --label-r: 4deg" href="room.html?year=2024" aria-label="Open 2024 Quiet Reconcile">
+            <img src="assets/music-space-overview-2024.png?v=fan2" alt="" />
+            <span class="hero-space-label"><strong>2024</strong><span>Quiet Reconcile</span></span>
+          </a>
+          <a class="hero-space" style="--x: 58.2%; --y: 22.4%; --w: 17%; --r: 4.5deg; --z: 2; --label-x: -22px; --label-y: -5px; --label-r: 9deg" href="room.html?year=2025" aria-label="Open 2025 Neon Chamber">
+            <img src="assets/music-space-overview-2025.png?v=fan2" alt="" />
+            <span class="hero-space-label"><strong>2025</strong><span>Neon Chamber</span></span>
+          </a>
+          <a class="hero-space" style="--x: 72.1%; --y: 32.8%; --w: 25.7%; --r: 11deg; --z: 5; --label-x: -52px; --label-y: -32px; --label-r: 15deg" href="room.html?year=2026" aria-label="Open 2026 Horizon Deck">
+            <img src="assets/music-space-overview-2026.png?v=fan2" alt="" />
+            <span class="hero-space-label"><strong>2026</strong><span>Horizon Deck</span></span>
+          </a>
+        </div>
+        <p class="hero-journey-line">
+          <span class="journey-shape journey-shape-left" aria-hidden="true"></span>
+          <span class="journey-shape journey-shape-right" aria-hidden="true"></span>
+          The 5-year journey moves from holding everything quietly, to replaying what still echoes, to facing myself, releasing what was heavy, and finally stepping forward.
+        </p>
+        <div class="hero-shade"></div>
+        <div class="hero-copy">
+          <h1>Songs Kept What Time Forgot</h1>
+          <p>
+            Time moves on. Details blur. But music remembers the room, the weather,
+            the person, and the version of yourself that was becoming.
+          </p>
+        </div>
+      </section>
+
+      <section id="story" class="story-section">
+        <div class="story-copy">
+          <p class="eyebrow">A museum built from listening history</p>
+          <h2>This is not a playlist. It is a collection of memory rooms.</h2>
+          <p>
+            Each space represents one year. Together, they form a timeline of feeling.
+          </p>
+        </div>
+      </section>
+
+      <section id="repeatPlayer" class="repeat-player" aria-label="Repeated music across years">
+        <audio id="repeatAudio" preload="metadata"></audio>
+        <p class="repeat-transport-caption">Songs that kept coming back, 2022-2026</p>
+        <div class="repeat-transport" aria-label="Repeated song transport">
+          <button id="repeatPrevButton" type="button" aria-label="Previous repeated song" title="Previous repeated song">&#10073;&#9664;</button>
+          <button id="repeatPlayButton" class="repeat-play-button" type="button" aria-label="Play repeated song sequence" title="Play repeated song sequence">&#9654;</button>
+          <button id="repeatNextButton" type="button" aria-label="Next repeated song" title="Next repeated song">&#9654;&#10073;</button>
+          <div class="repeat-transport-current" aria-live="polite">
+            <strong id="repeatTransportTitle">Finding the songs that returned</strong>
+            <span id="repeatTransportArtist"></span>
+            <small id="repeatTransportYears"></small>
+            <div class="repeat-transport-progress" aria-hidden="true">
+              <span id="repeatProgressFill"></span>
+            </div>
+          </div>
+          <div class="repeat-transport-status">
+            <span id="repeatPlaybackStatus">Paused</span>
+            <span id="repeatLibraryStatus">Scanning local library</span>
+          </div>
+          <label class="repeat-volume-control" for="repeatVolumeControl">
+            <span class="repeat-volume-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path d="M4 9.5h4l5-4v13l-5-4H4z"></path>
+                <path d="M16 8.5c1.2 1 2 2.1 2 3.5s-.8 2.5-2 3.5"></path>
+                <path d="M18.5 6c1.9 1.6 3 3.6 3 6s-1.1 4.4-3 6"></path>
+              </svg>
+            </span>
+            <span id="repeatVolumeValue" class="sr-only">50%</span>
+            <input id="repeatVolumeControl" type="range" min="0" max="100" value="50" aria-label="Music volume" aria-orientation="vertical" />
+          </label>
+        </div>
+      </section>
+
+      <section id="input" class="input-panel" aria-label="Music memory input">
+        <div class="input-copy">
+          <p class="eyebrow">Input music data</p>
+          <h2>Bring your own listening history.</h2>
+          <p>
+            Upload JSON or CSV, paste rows, or add one remembered year. Data stays in
+            this browser.
+          </p>
+        </div>
+
+        <div class="input-grid">
+          <div class="account-row">
+            <label for="accountName">Listener</label>
+            <div class="inline-control">
+              <input id="accountName" type="text" value="Guest Listener" />
+              <button id="saveAccountButton" type="button">Save</button>
+            </div>
+          </div>
+
+          <label class="file-button">
+            Upload listening file
+            <input id="fileInput" type="file" accept=".json,.csv,text/csv,application/json" />
+          </label>
+
+          <label class="field-stack" for="pasteInput">
+            <span>Paste rows</span>
+            <textarea
+              id="pasteInput"
+              rows="5"
+              placeholder="2025, Same Song New Ceiling, Mira Q, Room Tone, 34, late night repeat"
+            ></textarea>
+          </label>
+
+          <div class="quick-chapter" aria-label="Quick yearly chapter">
+            <input id="quickYear" type="number" min="2005" max="2026" placeholder="Year to remember" />
+            <input id="quickTracks" type="text" placeholder="Songs that hold it" />
+            <input id="quickArtists" type="text" placeholder="Artists who colored it" />
+            <input id="quickTags" type="text" placeholder="Moods / places / fragments" />
+          </div>
+        </div>
+
+        <div class="input-actions">
+          <button id="pasteImportButton" class="secondary-button" type="button">Recall pasted rows</button>
+          <button id="quickImportButton" class="secondary-button" type="button">Add memory year</button>
+          <button id="exportDatabaseButton" type="button">Export archive</button>
+          <button id="clearDatabaseButton" type="button">Clear</button>
+        </div>
+        <p id="importStatus" class="status-line" role="status"></p>
+      </section>
+    </main>
+
+    <template id="spaceTemplate">
+      <button class="space-sector" type="button">
+        <span class="sector-year"></span>
+        <span class="sector-wall">
+          <span class="sector-albums"></span>
+          <span class="sector-calendar"></span>
+          <span class="sector-wave"></span>
+        </span>
+        <span class="sector-floor"></span>
+      </button>
+    </template>
+
+    <script src="assets/audio/manifest.js?v=year-audio-1"></script>
+    <script src="assets/audio/title-translations.js?v=title-translations-1"></script>
+    <script src="space-hit-test.js?v=direct-year-play-49"></script>
+    <script src="app.js?v=direct-year-play-49"></script>
+  </body>
+</html>

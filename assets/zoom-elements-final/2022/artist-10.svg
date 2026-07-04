@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="250" viewBox="0 0 200 250">
+
+<defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#6b4b34"/><stop offset="1" stop-color="#111318"/></linearGradient></defs>
+<rect x="6" y="6" width="188" height="238" rx="10" fill="url(#g)" stroke="#b9823a" stroke-width="5"/>
+<circle cx="100" cy="85" r="44" fill="#426f8a" opacity="0.28"/>
+<circle cx="100" cy="78" r="31" fill="#2a2624" stroke="#b9823a" stroke-width="4"/>
+<path d="M52 146 C70 124 130 124 148 146 L148 168 L52 168 Z" fill="#2a2624" stroke="#426f8a" stroke-width="3" opacity="0.9"/>
+<text x="100" y="91" text-anchor="middle" fill="#b9823a" font-family="Arial, sans-serif" font-size="34" font-weight="800">JM</text>
+<rect x="14" y="186" width="172" height="42" rx="6" fill="#101217" opacity="0.86"/>
+<text x="100" y="211" text-anchor="middle" fill="#f8e7ad" font-family="Arial, sans-serif" font-size="16" font-weight="700">Joel McNeely</text>
+
+</svg>

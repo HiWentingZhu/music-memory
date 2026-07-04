@@ -1,0 +1,153 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="920" viewBox="0 0 1600 920">
+  <rect width="1600" height="920" fill="#F7F3EA"/>
+  <text x="80" y="78" fill="#161514" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="42" font-weight="800">Music Museum Color Palettes</text>
+  <text x="80" y="118" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20">dense private archive -> live/rehearsal density -> solitude reconciliation -> kinetic charge -> open horizon nostalgia</text>
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#161514" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+  
+      <g transform="translate(80 170)">
+        <rect x="0" y="0" width="256" height="620" rx="8" fill="#FFFCF4" stroke="#DDD2BF" filter="url(#shadow)"/>
+        <text x="24" y="44" fill="#161514" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="28" font-weight="800">2022</text>
+        <text x="24" y="76" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15">Rain Archive Amber</text>
+        
+        <rect x="24" y="108" width="208" height="76" rx="6" fill="#B9823A" />
+        <text x="24" y="210" fill="#161514" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800">#B9823A</text>
+        <text x="24" y="230" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">aged paper amber</text>
+      
+        <rect x="137" y="234" width="95" height="76" rx="6" fill="#426F8A" />
+        <text x="137" y="336" fill="#161514" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800">#426F8A</text>
+        <text x="137" y="356" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">rain-window blue</text>
+      
+        <rect x="24" y="360" width="95" height="76" rx="6" fill="#4B3327" />
+        <text x="24" y="462" fill="#161514" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800">#4B3327</text>
+        <text x="24" y="482" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">deep drawer wood</text>
+      
+        <rect x="137" y="360" width="95" height="76" rx="6" fill="#E6D5B3" />
+        <text x="137" y="462" fill="#161514" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800">#E6D5B3</text>
+        <text x="137" y="482" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">library cream</text>
+      
+        <rect x="24" y="486" width="95" height="76" rx="6" fill="#9D4B3E" />
+        <text x="24" y="588" fill="#161514" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800">#9D4B3E</text>
+        <text x="24" y="608" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">faded stamp red</text>
+      
+        <text x="24" y="568" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14">rainy archive-library listening room</text>
+      </g>
+    
+      <g transform="translate(376 170)">
+        <rect x="0" y="0" width="256" height="620" rx="8" fill="#FFFCF4" stroke="#DDD2BF" filter="url(#shadow)"/>
+        <text x="24" y="44" fill="#161514" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="28" font-weight="800">2023</text>
+        <text x="24" y="76" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15">Smoky Rehearsal Stage</text>
+        
+        <rect x="24" y="108" width="208" height="76" rx="6" fill="#252E5A" />
+        <text x="24" y="210" fill="#161514" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800">#252E5A</text>
+        <text x="24" y="230" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">stage indigo</text>
+      
+        <rect x="137" y="234" width="95" height="76" rx="6" fill="#C83E4D" />
+        <text x="137" y="336" fill="#161514" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800">#C83E4D</text>
+        <text x="137" y="356" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">marquee red</text>
+      
+        <rect x="24" y="360" width="95" height="76" rx="6" fill="#F2B84B" />
+        <text x="24" y="462" fill="#161514" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800">#F2B84B</text>
+        <text x="24" y="482" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">spotlight gold</text>
+      
+        <rect x="137" y="360" width="95" height="76" rx="6" fill="#191B20" />
+        <text x="137" y="462" fill="#161514" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800">#191B20</text>
+        <text x="137" y="482" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">cable black</text>
+      
+        <rect x="24" y="486" width="95" height="76" rx="6" fill="#A5AAB2" />
+        <text x="24" y="588" fill="#161514" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800">#A5AAB2</text>
+        <text x="24" y="608" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">brushed mic silver</text>
+      
+        <text x="24" y="568" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14">miniature live-memory rehearsal room</text>
+      </g>
+    
+      <g transform="translate(672 170)">
+        <rect x="0" y="0" width="256" height="620" rx="8" fill="#FFFCF4" stroke="#DDD2BF" filter="url(#shadow)"/>
+        <text x="24" y="44" fill="#161514" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="28" font-weight="800">2024</text>
+        <text x="24" y="76" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15">Quiet Reconciliation</text>
+        
+        <rect x="24" y="108" width="208" height="76" rx="6" fill="#8FA889" />
+        <text x="24" y="210" fill="#161514" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800">#8FA889</text>
+        <text x="24" y="230" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">quiet sage</text>
+      
+        <rect x="137" y="234" width="95" height="76" rx="6" fill="#9DB8C8" />
+        <text x="137" y="336" fill="#161514" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800">#9DB8C8</text>
+        <text x="137" y="356" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">mist blue</text>
+      
+        <rect x="24" y="360" width="95" height="76" rx="6" fill="#F2EBDD" />
+        <text x="24" y="462" fill="#161514" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800">#F2EBDD</text>
+        <text x="24" y="482" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">rice-paper white</text>
+      
+        <rect x="137" y="360" width="95" height="76" rx="6" fill="#D9B56A" />
+        <text x="137" y="462" fill="#161514" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800">#D9B56A</text>
+        <text x="137" y="482" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">candle gold</text>
+      
+        <rect x="24" y="486" width="95" height="76" rx="6" fill="#4A4F55" />
+        <text x="24" y="588" fill="#161514" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800">#4A4F55</text>
+        <text x="24" y="608" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">ink stone gray</text>
+      
+        <text x="24" y="568" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14">quiet reconciliation listening nook</text>
+      </g>
+    
+      <g transform="translate(968 170)">
+        <rect x="0" y="0" width="256" height="620" rx="8" fill="#FFFCF4" stroke="#DDD2BF" filter="url(#shadow)"/>
+        <text x="24" y="44" fill="#161514" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="28" font-weight="800">2025</text>
+        <text x="24" y="76" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15">Neon Kinetic Charge</text>
+        
+        <rect x="24" y="108" width="208" height="76" rx="6" fill="#00B8D9" />
+        <text x="24" y="210" fill="#161514" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800">#00B8D9</text>
+        <text x="24" y="230" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">electric cyan</text>
+      
+        <rect x="137" y="234" width="95" height="76" rx="6" fill="#FF4F9A" />
+        <text x="137" y="336" fill="#161514" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800">#FF4F9A</text>
+        <text x="137" y="356" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">hot pink</text>
+      
+        <rect x="24" y="360" width="95" height="76" rx="6" fill="#121318" />
+        <text x="24" y="462" fill="#161514" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800">#121318</text>
+        <text x="24" y="482" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">glossy black</text>
+      
+        <rect x="137" y="360" width="95" height="76" rx="6" fill="#E7F24A" />
+        <text x="137" y="462" fill="#161514" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800">#E7F24A</text>
+        <text x="137" y="482" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">acid yellow</text>
+      
+        <rect x="24" y="486" width="95" height="76" rx="6" fill="#D98F3F" />
+        <text x="24" y="588" fill="#161514" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800">#D98F3F</text>
+        <text x="24" y="608" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">warm lyric amber</text>
+      
+        <text x="24" y="568" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14">neon club-archive sound chamber</text>
+      </g>
+    
+      <g transform="translate(1264 170)">
+        <rect x="0" y="0" width="256" height="620" rx="8" fill="#FFFCF4" stroke="#DDD2BF" filter="url(#shadow)"/>
+        <text x="24" y="44" fill="#161514" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="28" font-weight="800">2026</text>
+        <text x="24" y="76" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15">Open Horizon Freedom</text>
+        
+        <rect x="24" y="108" width="208" height="76" rx="6" fill="#7CCFEA" />
+        <text x="24" y="210" fill="#161514" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800">#7CCFEA</text>
+        <text x="24" y="230" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">horizon sky</text>
+      
+        <rect x="137" y="234" width="95" height="76" rx="6" fill="#2FAE9B" />
+        <text x="137" y="336" fill="#161514" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800">#2FAE9B</text>
+        <text x="137" y="356" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">sea-glass teal</text>
+      
+        <rect x="24" y="360" width="95" height="76" rx="6" fill="#F3C45B" />
+        <text x="24" y="462" fill="#161514" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800">#F3C45B</text>
+        <text x="24" y="482" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">sunlit gold</text>
+      
+        <rect x="137" y="360" width="95" height="76" rx="6" fill="#F3EBDD" />
+        <text x="137" y="462" fill="#161514" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800">#F3EBDD</text>
+        <text x="137" y="482" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">cloud paper</text>
+      
+        <rect x="24" y="486" width="95" height="76" rx="6" fill="#7B6BB2" />
+        <text x="24" y="588" fill="#161514" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800">#7B6BB2</text>
+        <text x="24" y="608" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">dusk violet</text>
+      
+        <text x="24" y="568" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14">open horizon listening deck</text>
+      </g>
+    
+  <path d="M210 835 C390 790, 480 790, 570 835 S780 880, 840 835 S1060 790, 1145 835 S1330 880, 1450 835" fill="none" stroke="#161514" stroke-width="3" stroke-linecap="round" opacity="0.55"/>
+  <text x="80" y="870" fill="#6B655D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18">Palette movement: paper/rain -> stage/smoke -> mist/sage/candle -> neon/black -> horizon/sunlight</text>
+</svg>
