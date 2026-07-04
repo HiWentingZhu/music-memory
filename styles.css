@@ -3426,14 +3426,30 @@ body[data-page="room"]::before {
   z-index: 20;
   width: auto;
   margin: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 0.44fr);
+  align-items: end;
+  gap: clamp(24px, 4vw, 76px);
   color: var(--room-heading-color, var(--brown));
   text-shadow: none;
   pointer-events: none;
 }
 
-.room-page-shell .room-heading > *,
+.room-page-shell .room-heading-primary,
+.room-page-shell .room-heading-ai,
 .room-page-shell .tag-cloud {
   pointer-events: auto;
+}
+
+.room-page-shell .room-heading-primary {
+  min-width: 0;
+}
+
+.room-page-shell .room-heading-ai {
+  justify-self: end;
+  max-width: 460px;
+  padding-right: clamp(72px, 11vw, 210px);
+  text-align: right;
 }
 
 .room-page-shell .room-heading h2 {
@@ -3451,12 +3467,47 @@ body[data-page="room"]::before {
 }
 
 .room-page-shell .room-summary {
-  max-width: min(560px, 46vw);
+  max-width: min(760px, 58vw);
   margin: 0;
   color: var(--room-heading-color, var(--brown));
   font-size: clamp(0.86rem, 1.05vw, 1.08rem);
   line-height: 1.5;
   text-shadow: none;
+}
+
+.room-page-shell .room-ai-note {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  color: #a15f12;
+  font-family: var(--font-hud);
+  font-size: clamp(0.82rem, 1vw, 1.04rem);
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  line-height: 1.18;
+  text-shadow: 0 0 18px rgba(232, 196, 112, 0.26);
+}
+
+.room-page-shell .room-ai-note > strong,
+.room-page-shell .room-ai-note > span {
+  display: block;
+}
+
+.room-page-shell .room-ai-note > strong {
+  font-size: clamp(1rem, 1.18vw, 1.28rem);
+  text-transform: uppercase;
+}
+
+.room-page-shell .room-ai-note > span {
+  color: color-mix(in srgb, currentColor, var(--room-heading-color, var(--brown)) 34%);
+  font-size: clamp(0.78rem, 0.92vw, 0.96rem);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+body[data-page="room"][data-room-tone="dark"] .room-page-shell .room-ai-note {
+  color: var(--gold);
+  text-shadow: 0 0 18px rgba(232, 196, 112, 0.48);
 }
 
 .room-page-shell .tag-cloud span {
@@ -4443,9 +4494,17 @@ textarea {
 
   .room-page-shell .room-heading {
     top: 132px;
+    grid-template-columns: 1fr;
     align-items: start;
-    flex-direction: column;
     gap: 10px;
+  }
+
+  .room-page-shell .room-heading-ai {
+    justify-self: start;
+    max-width: min(620px, calc(100vw - 28px));
+    padding-top: 0;
+    padding-right: 0;
+    text-align: left;
   }
 
   .room-page-shell .room-summary {

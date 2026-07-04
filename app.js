@@ -1143,6 +1143,7 @@ async function initRoomPage() {
   document.body.style.setProperty("--room-bg-image", `url("${room.background}")`);
   document.querySelector("#roomTitle").textContent = room.title;
   document.querySelector("#roomSummary").textContent = room.summary;
+  document.querySelector("#roomAiYear").textContent = String(state.selectedYear);
   document.querySelector("#personaTags").replaceChildren(...room.tags.map((tag) => {
     const item = document.createElement("span");
     item.textContent = tag;

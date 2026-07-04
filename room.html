@@ -31,11 +31,17 @@
     <main>
       <section id="room" class="zoom-shell room-page-shell" aria-label="Selected yearly memory room">
         <div class="room-heading">
-          <div>
+          <div class="room-heading-primary">
             <p class="eyebrow">Zoom-in space</p>
             <h2 id="roomTitle">Loading room</h2>
             <div id="personaTags" class="tag-cloud room-heading-tags" aria-label="Space hashtags"></div>
             <p id="roomSummary" class="room-summary"></p>
+          </div>
+          <div class="room-heading-ai">
+            <p class="room-ai-note">
+              <strong>AI-Imagined Space</strong>
+              <span>from <span id="roomAiYear">2022</span>'s listening history</span>
+            </p>
           </div>
         </div>
         <div id="zoomRoom" class="zoom-room" aria-live="polite"></div>
