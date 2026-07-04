@@ -3320,7 +3320,7 @@ body[data-page="room"]::before {
   border-radius: 0;
   display: grid;
   justify-items: center;
-  align-items: end;
+  align-items: center;
   padding: var(--room-heading-clearance) 16px var(--room-menu-clearance);
   background: transparent;
   scrollbar-width: none;
@@ -3332,7 +3332,7 @@ body[data-page="room"]::before {
 
 .room-visual-stack {
   width: min(calc(100vw - 32px), 1255px);
-  align-self: end;
+  align-self: center;
   display: grid;
   justify-items: center;
   gap: 0;
