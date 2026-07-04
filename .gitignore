@@ -6,7 +6,12 @@ node_modules/
 *.log
 
 # Local/generated artifacts that usually should not be published.
-output/
+output/*
+!output/artist-image-downloads-v1/
+!output/artist-image-downloads-v1/**
+!output/artist-image-manifest.js
+!output/artist-info-manifest.js
+!output/artist-info-source-of-truth-v1.csv
 tools/ffmpeg/
 tools/ffmpeg-cache/
 tools/blender-portable/
