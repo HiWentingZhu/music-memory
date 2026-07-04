@@ -358,7 +358,11 @@ function initGlobalSoundPreference() {
     renderHomepageMusicPlayer();
   };
   window.addEventListener(SOUND_CHANGE_EVENT, (event) => {
-    state.soundEnabled = Boolean(event.detail?.enabled);
+    const enabled = Boolean(event.detail?.enabled);
+    if (event.detail?.initialChoice || event.detail?.choiceSettled) {
+      writeSoundChoice(enabled);
+    }
+    state.soundEnabled = enabled;
     applyGlobalSoundPreference(state.soundEnabled);
     postMusicFrameMessage({
       type: SOUND_CHANGE_EVENT,
@@ -470,6 +474,14 @@ function getSoundChoice() {
     return choice === "on" || choice === "off" ? choice : null;
   } catch {
     return null;
+  }
+}
+
+function writeSoundChoice(enabled) {
+  try {
+    window.sessionStorage.setItem(SOUND_CHOICE_KEY, enabled ? "on" : "off");
+  } catch {
+    // Session storage can be unavailable in private or embedded browsing contexts.
   }
 }
 
@@ -645,10 +657,12 @@ function handleYearParentCommand(message) {
   if (!tracks.length) return;
 
   if (message.command === "toggle") {
+    if (!state.roomMusicPlaying) ensureAudibleSoundPreference();
     toggleRoomMusicPlayback();
     return;
   }
   if (message.command === "play") {
+    ensureAudibleSoundPreference();
     startRoomMusicAudio();
     return;
   }
@@ -676,6 +690,7 @@ function handleYearParentCommand(message) {
     renderRoomMusicPlayer();
     postParentRoomPlaybackState();
     saveRoomPlaybackState({ force: true });
+    ensureAudibleSoundPreference();
     startRoomMusicAudio();
     return;
   }
@@ -766,6 +781,16 @@ function applyGlobalSoundPreference(enabled = getGlobalSoundEnabled()) {
   });
 }
 
+function ensureAudibleSoundPreference() {
+  writeSoundChoice(true);
+  applyGlobalSoundPreference(true);
+  postMusicFrameMessage({
+    type: SOUND_CHANGE_EVENT,
+    enabled: true,
+    choiceSettled: true,
+  });
+}
+
 async function initHomepagePage() {
   state.volume = readSharedVolume();
   initHomepageScrollText();
@@ -830,7 +855,7 @@ function ensureHomepageMemoryControlFrame() {
     });
     postYearPlaybackStates();
   });
-  frame.src = "control.html?year=2022&embed=memory&preload=1&v=direct-year-play-49";
+  frame.src = "control.html?year=2022&embed=memory&preload=1&v=sound-sync-1";
   document.body.append(frame);
   return frame;
 }
@@ -892,7 +917,7 @@ function enterRoomFromHomepage(year) {
     }
   };
   visibleFrame.addEventListener("load", syncVisibleControl, { once: true });
-  visibleFrame.src = `control.html?year=${year}&embed=memory${shouldAutoplay ? "&autoplay=1" : ""}&v=direct-year-play-49`;
+  visibleFrame.src = `control.html?year=${year}&embed=memory${shouldAutoplay ? "&autoplay=1" : ""}&v=sound-sync-1`;
 }
 
 function initHomepageOverviewSpacing() {
@@ -1576,7 +1601,7 @@ function renderMemoryControlFrame() {
     }
   }, { once: true });
   const resetPlayback = isPageRefresh() ? "&resetPlayback=1" : "";
-  frame.src = `control.html?year=${state.selectedYear}&embed=memory${resetPlayback}&v=direct-year-play-49`;
+  frame.src = `control.html?year=${state.selectedYear}&embed=memory${resetPlayback}&v=sound-sync-1`;
 }
 
 function bindRoomYearNavigation() {
@@ -1663,7 +1688,7 @@ function setControlFrameYear(year, options = {}) {
     postYearPlaybackStates();
     if (options.autoplay) startYearControlMusic();
   }, { once: true });
-  frame.src = `control.html?year=${year}&embed=memory${autoplay}&v=direct-year-play-49`;
+  frame.src = `control.html?year=${year}&embed=memory${autoplay}&v=sound-sync-1`;
 }
 
 function roomBottomActionsMarkup() {
@@ -1942,6 +1967,7 @@ function syncRoomMusicAudioSource(track) {
 }
 
 async function startRoomMusicAudio() {
+  ensureAudibleSoundPreference();
   if (!hasActiveSoundChoice()) {
     state.roomMusicPlaying = false;
     renderRoomMusicPlayer();

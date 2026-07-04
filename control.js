@@ -456,6 +456,14 @@ function getSoundChoice() {
   }
 }
 
+function writeSoundChoice(enabled) {
+  try {
+    window.sessionStorage.setItem(SOUND_CHOICE_KEY, enabled ? "on" : "off");
+  } catch {
+    // Session storage can be unavailable in private or embedded browsing contexts.
+  }
+}
+
 function hasSoundChoice() {
   return state.soundChoiceSettled || getSoundChoice() !== null;
 }
@@ -575,6 +583,9 @@ function initSoundAndPlaybackMessaging() {
 function applyControlSoundPreference(enabled = getSoundChoice() === "on", options = {}) {
   const storedChoice = getSoundChoice();
   state.soundEnabled = Boolean(enabled);
+  if (options.choiceSettled || state.soundEnabled) {
+    writeSoundChoice(state.soundEnabled);
+  }
   if (typeof options.choiceSettled === "boolean") {
     state.soundChoiceSettled = options.choiceSettled;
   } else if (storedChoice !== null) {
