@@ -415,27 +415,32 @@ function safeHistoryPushState(url) {
 
 function bindHomeLinkRecovery() {
   document.addEventListener("click", (event) => {
-    const link = event.target.closest?.("a[href*='index.html']");
+    const link = event.target.closest?.("a[href]");
     if (!link || document.body.dataset.page !== "room") return;
+    const href = link.getAttribute("href") || "";
     let target;
     try {
-      target = new URL(link.getAttribute("href"), window.location.href);
+      target = new URL(href, window.location.href);
     } catch {
       return;
     }
-    if (!target.pathname.endsWith("index.html")) return;
-    // Only intercept when the link points at the document we are already on
-    // (the in-place room view); a hash-only difference would otherwise
-    // make the back-to-homepage link do nothing. A hash-only change is a
-    // same-document navigation, so a real reload is required here.
-    if (target.pathname !== window.location.pathname) return;
+    const sameDocument = target.origin === window.location.origin && target.pathname === window.location.pathname;
+    const sameDocumentHomeLink = sameDocument && target.hash === "#home";
+    const hashOnlyHomeLink = href.trim().startsWith("#home");
+    if (!sameDocumentHomeLink && !hashOnlyHomeLink) return;
     event.preventDefault();
     try {
       window.sessionStorage.setItem(INTERNAL_HOME_NAV_KEY, "1");
     } catch {
       // Without storage the reload still works; sound choice may reset.
     }
-    window.location.reload();
+    const homeUrl = new URL("index.html#home", window.location.href);
+    if (homeUrl.pathname === window.location.pathname) {
+      window.location.href = homeUrl.href;
+      window.location.reload();
+      return;
+    }
+    window.location.assign(homeUrl.href);
   });
 }
 
