@@ -10,6 +10,8 @@ const PLAY_MODE_LABELS = {
 
 const SONG_LIST_DRAG_SCALE = 0.86;
 const SONG_LIST_SWITCH_RATIO = 1;
+const SONG_LIST_WHEEL_COOLDOWN_MS = 260;
+const SONG_LIST_WHEEL_THRESHOLD = 18;
 const ARTIST_IMAGE_ROTATE_MS = 30000;
 const ARTIST_IMAGE_FADE_MS = 900;
 const ARTIST_INFO_CSV_PATH = "output/artist-info-source-of-truth-v1.csv";
@@ -361,6 +363,8 @@ const songListDrag = {
   suppressClick: false,
   lastSwitchAt: 0,
   lockedAfterSwitch: false,
+  wheelDelta: 0,
+  lastWheelAt: 0,
 };
 
 init();
@@ -915,6 +919,25 @@ function shouldIgnorePlaybackKeyTarget(target) {
 }
 
 function bindSongListDrag() {
+  songList.addEventListener("keydown", (event) => {
+    handleSongListKeyboardEvent(event);
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (songList.contains(document.activeElement)) return;
+    if (!songList.matches(":hover")) return;
+    handleSongListKeyboardEvent(event);
+  });
+
+  songList.addEventListener("wheel", (event) => {
+    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+    if (getTracks().length < 2) return;
+    const direction = getSongListWheelDirection(event);
+    if (!direction) return;
+    event.preventDefault();
+    moveTrackFromSongListInput(direction);
+  }, { passive: false });
+
   songList.addEventListener("pointerdown", (event) => {
     if (event.button !== undefined && event.button !== 0) return;
     if (getTracks().length < 2) return;
@@ -980,6 +1003,39 @@ function bindSongListDrag() {
       setSongListDragOffset(0);
     });
   });
+}
+
+function handleSongListKeyboardEvent(event) {
+  if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return false;
+  const direction = getSongListKeyboardDirection(event);
+  if (!direction || getTracks().length < 2) return false;
+  event.preventDefault();
+  moveTrackFromSongListInput(direction);
+  return true;
+}
+
+function getSongListKeyboardDirection(event) {
+  if (event.key === "ArrowUp" || event.key === "Up") return -1;
+  if (event.key === "ArrowDown" || event.key === "Down") return 1;
+  return 0;
+}
+
+function getSongListWheelDirection(event) {
+  const delta = Math.abs(event.deltaY) >= Math.abs(event.deltaX) ? event.deltaY : event.deltaX;
+  if (!delta) return 0;
+  songListDrag.wheelDelta += delta;
+  if (Math.abs(songListDrag.wheelDelta) < SONG_LIST_WHEEL_THRESHOLD) return 0;
+  const now = performance.now();
+  if (now - songListDrag.lastWheelAt < SONG_LIST_WHEEL_COOLDOWN_MS) return 0;
+  songListDrag.lastWheelAt = now;
+  const direction = songListDrag.wheelDelta > 0 ? 1 : -1;
+  songListDrag.wheelDelta = 0;
+  return direction;
+}
+
+function moveTrackFromSongListInput(direction) {
+  const command = direction > 0 ? "next" : "prev";
+  if (!requestParentPlaybackCommand(command)) moveTrack(direction);
 }
 
 function setSongListDragOffset(offset, progress = 0) {

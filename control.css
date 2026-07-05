@@ -327,6 +327,11 @@ body[data-embed="memory"] .empty-state {
   --drag-offset: 0px;
 }
 
+.song-list:focus-visible {
+  outline: 1px solid color-mix(in srgb, var(--accent) 74%, transparent);
+  outline-offset: 4px;
+}
+
 .song-list li {
   position: relative;
 }

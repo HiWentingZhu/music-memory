@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Linger - Music Control</title>
     <link rel="stylesheet" href="fonts/fonts.css" />
-    <link rel="stylesheet" href="control.css?v=artist-name-fallback-1" />
+    <link rel="stylesheet" href="control.css?v=song-list-input-1" />
   </head>
   <body>
     <main class="control-page" aria-label="Year music control demo">
@@ -20,7 +20,7 @@
       <section class="clay-control" aria-label="Music controller">
         <section class="music-list-panel" aria-label="Year music list">
           <div class="panel-title"><i></i><span id="musicListTitle">2026 MUSIC LIST</span><i></i></div>
-          <ol id="controlSongList" class="song-list"></ol>
+          <ol id="controlSongList" class="song-list" tabindex="0" aria-label="Year song list"></ol>
         </section>
 
         <section class="playback-panel" aria-label="Current music">
@@ -97,6 +97,6 @@
     <script src="assets/audio/title-translations.js?v=title-translations-1"></script>
     <script src="output/artist-image-manifest.js?v=artist-public-2"></script>
     <script src="output/artist-info-manifest.js?v=artist-public-2"></script>
-    <script src="control.js?v=audio-merge-2"></script>
+    <script src="control.js?v=song-list-input-1"></script>
   </body>
 </html>
