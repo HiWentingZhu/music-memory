@@ -20,6 +20,7 @@ const YEAR_PLAYBACK_KEY_PREFIX = "linger:playback:year:";
 const YEAR_PLAYBACK_SAVE_EVENT = "linger:year-playback-save";
 const YEAR_PLAYBACK_RESTORE_EVENT = "linger:year-playback-restore";
 const INTERNAL_HOME_NAV_KEY = "linger:internal-home-nav";
+const LAST_ROOM_YEAR_KEY = "linger:last-room-year";
 const HOMEPAGE_AUDIO_READY_EVENT = "linger:homepageready";
 const HOMEPAGE_INTRO_DONE_EVENT = "linger:homeintrodone";
 const HOMEPAGE_LAYOUT_REFRESH_EVENT = "linger:homepagelayoutrefresh";
@@ -167,6 +168,7 @@ function bootLingerApp() {
   initGlobalSoundPreference();
   bindGlobalKeyboardPlayback();
   bindHomeLinkRecovery();
+  updateZoomNavLinks();
   if (document.body.dataset.page === "overview") {
     initHomepagePage();
   } else if (document.body.dataset.page === "room") {
@@ -1418,6 +1420,8 @@ function initHomepageScrollText() {
 
 async function initRoomPage() {
   state.selectedYear = getSelectedYear();
+  rememberRoomYear(state.selectedYear);
+  updateZoomNavLinks(state.selectedYear);
   const room = ROOM_INFO[state.selectedYear] || ROOM_INFO[2022];
   document.body.dataset.roomYear = String(state.selectedYear);
   document.body.dataset.roomTone = room.tone;
@@ -1443,6 +1447,31 @@ async function initRoomPage() {
 function getSelectedYear() {
   const year = Number(new URLSearchParams(window.location.search).get("year"));
   return YEARS.includes(year) ? year : 2022;
+}
+
+function getRememberedRoomYear() {
+  try {
+    const year = Number(window.localStorage?.getItem(LAST_ROOM_YEAR_KEY));
+    return YEARS.includes(year) ? year : 2022;
+  } catch {
+    return 2022;
+  }
+}
+
+function rememberRoomYear(year) {
+  if (!YEARS.includes(year)) return;
+  try {
+    window.localStorage?.setItem(LAST_ROOM_YEAR_KEY, String(year));
+  } catch {
+    // Storage can be unavailable; the static 2022 link remains the fallback.
+  }
+}
+
+function updateZoomNavLinks(year = document.body.dataset.page === "room" ? getSelectedYear() : getRememberedRoomYear()) {
+  const roomYear = YEARS.includes(year) ? year : 2022;
+  document.querySelectorAll(".nav-zoom").forEach((link) => {
+    link.href = `room.html?year=${roomYear}`;
+  });
 }
 
 async function loadLocalMusic() {
@@ -1922,6 +1951,8 @@ function navigateRoomYear(year, options = {}) {
   }
 
   state.selectedYear = year;
+  rememberRoomYear(year);
+  updateZoomNavLinks(year);
   state.roomMusicIndex = 0;
   state.roomMusicSeededYear = null;
   state.roomRestoreTime = 0;
