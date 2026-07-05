@@ -84,7 +84,7 @@ const ROOM_INFO = {
     tags: ["#SoloReconcile", "#QuietRoom", "#SoftAlbumPanel", "#FoldedNoteMood", "#MakingPeace"],
   },
   2025: {
-    title: "2025 Neon Kinetic Charge",
+    title: "2025 Neon Chamber",
     tone: "dark",
     summary: "Glossy neon club energy, beat files, and kinetic listening movement.",
     image: "assets/music-space-zoom-2025-v8-no-controller-transparent.png",
