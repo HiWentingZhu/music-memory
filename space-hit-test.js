@@ -1,5 +1,5 @@
 (() => {
-  const spaces = Array.from(document.querySelectorAll(".hero-space"));
+  const spaces = Array.from(document.querySelectorAll(".hero-space, .why-space-image"));
   const alphaMaps = new Map();
   const SOUND_COOLDOWN_MS = 90;
   const HOVER_SOUND = { pitch: 320, gain: 0.045, duration: 0.045, noise: 0.012, filter: 1450 };
@@ -254,7 +254,7 @@
   }
 
   function loadAlphaMap(space) {
-    const img = space.querySelector("img");
+    const img = space.matches("img") ? space : space.querySelector("img");
     if (!img) return Promise.resolve(null);
 
     return new Promise((resolve) => {
@@ -312,7 +312,7 @@
   function topVisibleSpace(event) {
     return document
       .elementsFromPoint(event.clientX, event.clientY)
-      .filter((element) => element.classList?.contains("hero-space"))
+      .filter((element) => element.classList?.contains("hero-space") || element.classList?.contains("why-space-image"))
       .find((space) => hasVisiblePixel(space, event.clientX, event.clientY));
   }
 

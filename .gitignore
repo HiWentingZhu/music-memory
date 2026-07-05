@@ -18,6 +18,7 @@ tools/blender-portable/
 tools/installers/
 assets/audio/manifest.js
 assets/audio/**/*.mp3
+!assets/audio/why-nostalgic-piano.mp3
 assets/audio/**/*.m4a
 assets/audio/**/*.wav
 assets/audio/**/*.ogg

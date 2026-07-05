@@ -26,6 +26,12 @@ const HOMEPAGE_LAYOUT_REFRESH_EVENT = "linger:homepagelayoutrefresh";
 const HOMEPAGE_MUSIC_MAX_GAIN = 0.20;
 const HOMEPAGE_DEFAULT_VOLUME = 50;
 const YEAR_MUSIC_MAX_GAIN = 0.20;
+const WHY_MUSIC_MAX_GAIN = 0.16;
+const WHY_MUSIC_TRACK = {
+  title: "Nostalgic Piano",
+  artist: "AtlasAudio",
+  audioSrc: "assets/audio/why-nostalgic-piano.mp3",
+};
 const SHARED_VOLUME_KEY = "linger:music-volume";
 const VOLUME_CHANGE_EVENT = "linger:volumechange";
 const SOFT_HOMEPAGE_SONGS = [
@@ -143,12 +149,15 @@ const state = {
   roomPendingMusicStart: false,
   roomRestoreTime: 0,
   roomLastPlaybackSaveAt: 0,
+  whyMusicPlaying: false,
+  whyAutoplayBlocked: false,
   applyingSharedPlayState: false,
   volume: HOMEPAGE_DEFAULT_VOLUME,
   soundEnabled: false,
 };
 
 let roomAudio = document.querySelector("#roomAudio");
+let whyAudio = document.querySelector("#whyAudio");
 const repeatAudio = document.querySelector("#repeatAudio");
 
 function bootLingerApp() {
@@ -162,6 +171,8 @@ function bootLingerApp() {
     initHomepagePage();
   } else if (document.body.dataset.page === "room") {
     initRoomPage();
+  } else if (document.body.dataset.page === "why") {
+    initWhyPage();
   }
 }
 
@@ -237,6 +248,7 @@ function applySharedVolume(value, options = {}) {
   state.volume = writeSharedVolume(value);
   if (repeatAudio) repeatAudio.volume = getHomepageAudioVolume();
   if (roomAudio) roomAudio.volume = getYearMusicAudioVolume();
+  if (whyAudio) whyAudio.volume = getWhyAudioVolume();
   if (document.body.dataset.page === "overview") renderHomepageMusicPlayer();
   if (document.body.dataset.page === "room") renderRoomMusicPlayer();
   if (options.broadcast !== false) broadcastSharedVolume();
@@ -281,6 +293,7 @@ function initTrebleNoteCursor() {
     "[tabindex]:not([tabindex='-1'])",
     ".hero-space",
     ".space-hotspot",
+    ".why-space-image",
   ].join(",");
 
   const removeParticle = (particle) => {
@@ -444,9 +457,264 @@ function bindHomeLinkRecovery() {
   });
 }
 
+function initWhyPage() {
+  whyAudio = document.querySelector("#whyAudio");
+  bindWhyAudio();
+  syncWhyAudioSource();
+  if (hasActiveSoundChoice() && isMusicPlaybackRequested()) startWhyAudio();
+
+  const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  if (motionQuery.matches) {
+    document.body.classList.add("why-sequence-complete");
+    return;
+  }
+
+  const typeTargets = [
+    ".why-layoff-type",
+    ".why-memory-type",
+    ".why-playlist-type",
+  ].map(prepareWhyTypeTarget).filter(Boolean);
+
+  runWhySequence(typeTargets);
+}
+
+function bindWhyAudio() {
+  if (!whyAudio || whyAudio.dataset.bound === "1") return;
+  whyAudio.dataset.bound = "1";
+  whyAudio.addEventListener("play", () => {
+    state.whyMusicPlaying = true;
+  });
+  whyAudio.addEventListener("pause", () => {
+    state.whyMusicPlaying = false;
+  });
+}
+
+function syncWhyAudioSource() {
+  if (!whyAudio) return false;
+  applyGlobalSoundPreference();
+  whyAudio.loop = true;
+  whyAudio.volume = getWhyAudioVolume();
+  const resolved = new URL(WHY_MUSIC_TRACK.audioSrc, window.location.href).href;
+  if (whyAudio.src !== resolved) {
+    if (!whyAudio.paused) whyAudio.pause();
+    whyAudio.src = WHY_MUSIC_TRACK.audioSrc;
+    whyAudio.load();
+  }
+  return true;
+}
+
+function getWhyAudioVolume() {
+  return (state.volume / 100) * WHY_MUSIC_MAX_GAIN;
+}
+
+async function startWhyAudio() {
+  if (!hasActiveSoundChoice()) {
+    state.whyMusicPlaying = false;
+    return false;
+  }
+  setMusicPlaybackRequested(true);
+  if (!syncWhyAudioSource()) {
+    state.whyMusicPlaying = false;
+    return false;
+  }
+
+  state.whyAutoplayBlocked = false;
+  try {
+    await whyAudio.play();
+    state.whyMusicPlaying = true;
+    window.lingerLastWhyAudioError = "";
+    return true;
+  } catch {
+    try {
+      await waitForAudioReady(whyAudio);
+      await whyAudio.play();
+      state.whyMusicPlaying = true;
+      window.lingerLastWhyAudioError = "";
+      return true;
+    } catch (error) {
+      window.lingerLastWhyAudioError = error?.message || String(error || "Why page audio play failed");
+      state.whyAutoplayBlocked = error?.name === "NotAllowedError" || /gesture|allowed|permission|interact/i.test(window.lingerLastWhyAudioError);
+      state.whyMusicPlaying = false;
+      if (state.whyAutoplayBlocked) scheduleWhyGestureResume();
+      return false;
+    }
+  }
+}
+
+let whyGestureResumeBound = false;
+
+function scheduleWhyGestureResume() {
+  if (whyGestureResumeBound) return;
+  whyGestureResumeBound = true;
+  const resume = (event) => {
+    document.removeEventListener("pointerdown", resume, true);
+    document.removeEventListener("keydown", resume, true);
+    whyGestureResumeBound = false;
+    if (event.target?.closest?.(".hover-sound-toggle, .hover-sound-prompt")) return;
+    if (!state.whyMusicPlaying && hasActiveSoundChoice() && isMusicPlaybackRequested()) {
+      startWhyAudio();
+    }
+  };
+  document.addEventListener("pointerdown", resume, true);
+  document.addEventListener("keydown", resume, true);
+}
+
+function stopWhyAudio() {
+  if (whyAudio && !whyAudio.paused) whyAudio.pause();
+  state.whyMusicPlaying = false;
+}
+
+function toggleWhyAudio() {
+  state.whyAutoplayBlocked = false;
+  if (state.whyMusicPlaying) {
+    setMusicPlaybackRequested(false);
+    stopWhyAudio();
+    return;
+  }
+  startWhyAudio();
+}
+
+async function runWhySequence(typeTargets) {
+  await waitForWhyStep(120);
+  revealWhy(".site-nav");
+
+  await waitForWhyStep(260);
+  revealWhy(".why-hero-copy .eyebrow");
+
+  await waitForWhyStep(220);
+  revealWhy(".why-hero-copy h1");
+  revealWhy(".why-hero-notes");
+  revealWhyList(".why-room-strip img", 220);
+
+  await waitForWhyStep(920);
+  if (typeTargets[0]) await typeWhyLine(typeTargets[0]);
+
+  await waitForWhyStep(320);
+  revealWhy(".why-story-image-wrap");
+  revealWhy(".why-story-notes");
+  revealWhy(".why-story-lede .why-story-label");
+  revealWhy(".why-story-lede .why-qq-intro");
+
+  await waitForWhyStep(920);
+  if (typeTargets[1]) await typeWhyLine(typeTargets[1]);
+
+  await waitForWhyStep(340);
+  revealWhy(".why-manifesto p:nth-child(1)");
+
+  await waitForWhyStep(300);
+  revealWhy(".why-manifesto blockquote");
+
+  await waitForWhyStep(460);
+  if (typeTargets[2]) await typeWhyLine(typeTargets[2]);
+
+  await waitForWhyStep(360);
+  revealWhy(".why-rooms-notes");
+  revealWhy(".why-rooms-heading .eyebrow");
+  await waitForWhyStep(220);
+  revealWhy(".why-rooms-heading h2");
+
+  await waitForWhyStep(420);
+  revealWhyList(".why-room-links a", 180);
+
+  await waitForWhyStep(900);
+  revealWhyList(".why-sources > *", 120);
+}
+
+function prepareWhyTypeTarget(selector) {
+  const target = document.querySelector(selector);
+  if (!target) return null;
+
+  const text = target.textContent.replace(/\s+/g, " ").trim();
+  if (!text) return null;
+
+  target.dataset.whyTypeText = text;
+  target.textContent = "";
+  target.classList.add("why-typewriter-text");
+  return { target, text };
+}
+
+function revealWhy(selectorOrElement) {
+  const element = typeof selectorOrElement === "string"
+    ? document.querySelector(selectorOrElement)
+    : selectorOrElement;
+  element?.classList.add("is-visible");
+}
+
+function revealWhyList(selector, interval = 160) {
+  document.querySelectorAll(selector).forEach((element, index) => {
+    window.setTimeout(() => revealWhy(element), index * interval);
+  });
+}
+
+function typeWhyLine(typeTarget) {
+  return new Promise((resolve) => {
+    const { target, text } = typeTarget;
+    target.classList.add("is-visible", "is-typing");
+    let index = 0;
+    const step = () => {
+      index += 1;
+      target.textContent = text.slice(0, index);
+      if (index < text.length) {
+        window.setTimeout(step, getWhyTypeDelay(text[index - 1]));
+        return;
+      }
+      target.classList.remove("is-typing");
+      resolve();
+    };
+    step();
+  });
+}
+
+function waitForWhyStep(delay) {
+  return new Promise((resolve) => window.setTimeout(resolve, delay));
+}
+
+function getWhyTypeDelay(character) {
+  if (/[.!?:]/.test(character)) return 115;
+  if (/[,;]/.test(character)) return 66;
+  if (character === " ") return 14;
+  return 18 + Math.random() * 12;
+}
+
+function revealWhyAll() {
+  [
+    ".site-nav",
+    ".why-hero-copy .eyebrow",
+    ".why-hero-copy h1",
+    ".why-layoff-type",
+    ".why-note-field",
+    ".why-room-strip img",
+    ".why-story-image-wrap",
+    ".why-story-lede p",
+    ".why-manifesto p",
+    ".why-manifesto blockquote",
+    ".why-rooms-heading > *",
+    ".why-room-links a",
+    ".why-sources > *",
+  ].forEach((selector) => {
+    document.querySelectorAll(selector).forEach((element) => {
+      if (element.dataset.whyTypeText) {
+        element.textContent = element.dataset.whyTypeText;
+      }
+      element.classList.add("is-visible");
+      element.classList.remove("is-typing");
+    });
+  });
+}
+
+window.addEventListener("pagehide", () => {
+  if (document.body.dataset.page === "why") {
+    revealWhyAll();
+  }
+});
+
 function toggleCurrentPagePlayback() {
   if (document.body.dataset.page === "overview") {
     toggleHomepageAudio();
+    return;
+  }
+  if (document.body.dataset.page === "why") {
+    toggleWhyAudio();
     return;
   }
   try {
@@ -587,6 +855,8 @@ function applySharedMusicPlayState(playing, options = {}) {
     if (playing) {
       if (document.body.dataset.page === "overview") {
         startHomepageAudio();
+      } else if (document.body.dataset.page === "why") {
+        startWhyAudio();
       } else if (!options.fromCurrentControl) {
         startYearControlMusic();
       }
@@ -595,8 +865,10 @@ function applySharedMusicPlayState(playing, options = {}) {
     }
     if (repeatAudio && !repeatAudio.paused) repeatAudio.pause();
     if (roomAudio && !roomAudio.paused) roomAudio.pause();
+    if (whyAudio && !whyAudio.paused) whyAudio.pause();
     state.homepageMusicPlaying = false;
     state.roomMusicPlaying = false;
+    state.whyMusicPlaying = false;
     renderHomepageMusicPlayer();
     renderRoomMusicPlayer();
     if (options.broadcast !== false) getMusicControlFrameWindow()?.postMessage({ type: MUSIC_PLAY_STATE_CHANGE_EVENT, playing: false }, "*");
@@ -610,6 +882,9 @@ function startCurrentPageMusic() {
   setMusicPlaybackRequested(true);
   if (document.body.dataset.page === "overview") {
     return startHomepageAudio();
+  }
+  if (document.body.dataset.page === "why") {
+    return startWhyAudio();
   }
   startYearControlMusic();
   return true;
