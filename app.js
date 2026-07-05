@@ -883,11 +883,17 @@ function enterRoomFromHomepage(year) {
   main.innerHTML = `
     <section id="room" class="zoom-shell room-page-shell" aria-label="Selected yearly memory room">
       <div class="room-heading">
-        <div>
+        <div class="room-heading-primary">
           <p class="eyebrow">Zoom-in space</p>
           <h2 id="roomTitle">Loading room</h2>
           <div id="personaTags" class="tag-cloud room-heading-tags" aria-label="Space hashtags"></div>
           <p id="roomSummary" class="room-summary"></p>
+        </div>
+        <div class="room-heading-ai">
+          <p class="room-ai-note">
+            <strong>AI-Imagined Space</strong>
+            <span>from <span id="roomAiYear">${year}</span>'s listening history</span>
+          </p>
         </div>
       </div>
       <div id="zoomRoom" class="zoom-room" aria-live="polite"></div>
@@ -1143,7 +1149,7 @@ async function initRoomPage() {
   document.body.style.setProperty("--room-bg-image", `url("${room.background}")`);
   document.querySelector("#roomTitle").textContent = room.title;
   document.querySelector("#roomSummary").textContent = room.summary;
-  document.querySelector("#roomAiYear").textContent = String(state.selectedYear);
+  setText("#roomAiYear", String(state.selectedYear));
   document.querySelector("#personaTags").replaceChildren(...room.tags.map((tag) => {
     const item = document.createElement("span");
     item.textContent = tag;
