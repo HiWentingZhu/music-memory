@@ -26,9 +26,10 @@
   --hero-copy-overview-gap: 44px;
   --hero-overview-journey-gap: 24px;
   --hero-overview-shrink: 0px;
+  --hero-overview-y: clamp(-38px, -4.2vh, -20px);
   --hero-journey-scale: 1;
   --repeat-transport-bottom: clamp(34px, 7vh, 96px);
-  --repeat-transport-drop: 0px;
+  --repeat-transport-drop: clamp(10px, 1.8vh, 18px);
   --nav-color: var(--brown);
   --nav-subtle-color: var(--brown-soft);
   --nav-line-color: rgba(59, 40, 27, 0.42);
@@ -39,6 +40,7 @@
   --room-button-active-line: var(--brown);
   --hero-copy-opacity: 1;
   --story-copy-opacity: 0;
+  --curator-copy-opacity: 0;
   --room-stage-width: min(80vw, calc(80vh * 16 / 9));
   --room-stage-aspect: 1680 / 945;
   --controller-surface: rgba(23, 25, 32, 0.96);
@@ -1406,41 +1408,49 @@ body.home-intro-active .hero-space.is-intro-visible {
   opacity: 0.5;
 }
 
-.story-copy .text-note-field {
+.story-copy .text-note-field,
+.curator-copy .text-note-field {
   inset: -28px -68px -16px;
 }
 
-.story-copy .text-note-1 {
+.story-copy .text-note-1,
+.curator-copy .text-note-1 {
   left: 8%;
   top: 4%;
 }
 
-.story-copy .text-note-2 {
+.story-copy .text-note-2,
+.curator-copy .text-note-2 {
   right: 8%;
   top: 10%;
 }
 
-.story-copy .text-note-3 {
+.story-copy .text-note-3,
+.curator-copy .text-note-3 {
   right: 21%;
   bottom: 0;
 }
 
-.story-copy .text-note-4 {
+.story-copy .text-note-4,
+.curator-copy .text-note-4 {
   left: 4%;
   bottom: 18%;
 }
 
-.story-copy .text-note-5 {
+.story-copy .text-note-5,
+.curator-copy .text-note-5 {
   left: 14%;
   top: -12%;
 }
 
-.story-copy .text-note-6 {
+.story-copy .text-note-6,
+.curator-copy .text-note-6 {
   right: 30%;
   top: 0;
 }
 
-.story-copy .text-note-7 {
+.story-copy .text-note-7,
+.curator-copy .text-note-7 {
   left: 64%;
   bottom: -8%;
 }
@@ -1606,13 +1616,14 @@ h3 {
   min-height: clamp(270px, 34vh, 430px);
   padding: clamp(72px, 10vw, 132px) 0 clamp(42px, 7vw, 86px);
   color: var(--brown);
-  opacity: var(--story-copy-opacity);
+  opacity: 1;
   pointer-events: none;
   text-align: center;
   transition: opacity 1300ms ease-in-out;
 }
 
-.story-copy {
+.story-copy,
+.curator-copy {
   position: fixed;
   top: clamp(88px, 12vh, 142px);
   left: 50%;
@@ -1622,21 +1633,33 @@ h3 {
   gap: 18px;
   width: min(850px, calc(100% - 42px));
   transform: translateX(-50%);
+  transition: opacity 1100ms ease-in-out;
 }
 
-.story-copy .eyebrow {
+.story-copy {
+  opacity: var(--story-copy-opacity);
+}
+
+.curator-copy {
+  opacity: var(--curator-copy-opacity);
+}
+
+.story-copy .eyebrow,
+.curator-copy .eyebrow {
   font-size: clamp(0.95rem, 1.35vw, 1.2rem);
   font-weight: 700;
 }
 
-.story-copy h2 {
+.story-copy h2,
+.curator-copy h2 {
   max-width: 760px;
   font-size: clamp(1.6rem, 3.2vw, 3.2rem);
   font-weight: 600;
   line-height: 1.12;
 }
 
-.story-copy p:not(.eyebrow) {
+.story-copy p:not(.eyebrow),
+.curator-copy p:not(.eyebrow) {
   max-width: 720px;
   margin: 0;
   color: var(--brown-soft);
@@ -5088,6 +5111,11 @@ textarea {
 }
 
 @media (max-width: 620px) {
+  :root {
+    --hero-overview-y: -12px;
+    --repeat-transport-drop: 0px;
+  }
+
   .site-nav {
     padding: 16px 14px;
     gap: 8px 10px;

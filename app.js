@@ -1209,12 +1209,12 @@ function enterRoomFromHomepage(year) {
 }
 
 function initHomepageOverviewSpacing() {
-  const heroCopy = document.querySelector(".hero-copy");
+  const headerCopies = [...document.querySelectorAll(".hero-copy, .story-copy, .curator-copy")];
   const spaces = document.querySelector(".hero-spaces");
   const journeyLine = document.querySelector(".hero-journey-line");
   const transport = document.querySelector(".repeat-transport");
   const transportCaption = document.querySelector(".repeat-transport-caption");
-  if (!heroCopy || !spaces) return;
+  if (!headerCopies.length || !spaces) return;
   const safeGap = 5;
 
   const getSpaceUnionRect = () => {
@@ -1232,14 +1232,35 @@ function initHomepageOverviewSpacing() {
     document.documentElement.style.setProperty(name, `${Math.max(0, Math.round(value))}px`);
   };
 
+  const getHeaderTextRect = () => {
+    const rects = headerCopies
+      .map((copy) => copy.getBoundingClientRect())
+      .filter((rect) => rect.width && rect.height);
+    if (!rects.length) return null;
+    return {
+      top: Math.min(...rects.map((rect) => rect.top)),
+      bottom: Math.max(...rects.map((rect) => rect.bottom)),
+    };
+  };
+
   const applyBaseSpacing = () => {
     document.documentElement.style.setProperty("--hero-overview-y", "0px");
     const overviewWidth = spaces.getBoundingClientRect().width;
     const minimumGap = Math.round(Math.max(42, Math.min(104, overviewWidth * 0.055)));
     const journeyGap = Math.round(Math.max(-40, Math.min(-20, overviewWidth * 0.02)));
-    const copyBottom = heroCopy.getBoundingClientRect().bottom;
+    const headerTextRect = getHeaderTextRect();
+    const controlRect = getControlRect();
     const overviewRect = getSpaceUnionRect();
-    const neededOffset = Math.round(copyBottom + minimumGap - overviewRect.top);
+    const journeyHeight = journeyLine?.getBoundingClientRect().height || 0;
+    const groupHeight = overviewRect.bottom + journeyGap + journeyHeight - overviewRect.top;
+    const headerBottom = headerTextRect?.bottom || 0;
+    const minimumTop = headerBottom + minimumGap;
+    const availableTop = headerBottom;
+    const availableBottom = (controlRect?.top || window.innerHeight) - safeGap;
+    const availableHeight = Math.max(0, availableBottom - availableTop);
+    const centeredTop = availableTop + Math.max(0, (availableHeight - groupHeight) / 2);
+    const targetTop = Math.max(minimumTop, centeredTop);
+    const neededOffset = Math.round(targetTop - overviewRect.top);
     document.documentElement.style.setProperty("--hero-copy-overview-gap", `${minimumGap}px`);
     document.documentElement.style.setProperty("--hero-overview-y", `${neededOffset}px`);
     document.documentElement.style.setProperty("--hero-overview-journey-gap", `${journeyGap}px`);
@@ -1392,28 +1413,32 @@ function initHomepageIntro() {
 }
 
 function initHomepageScrollText() {
-  const hero = document.querySelector("#home");
-  const story = document.querySelector("#story");
-  if (!hero || !story) return;
+  const slides = [
+    document.querySelector(".hero-copy"),
+    document.querySelector(".story-copy"),
+    document.querySelector(".curator-copy"),
+  ].filter(Boolean);
+  if (slides.length < 2) return;
 
   const textChangeDelay = 5500;
-  let isShowingStoryText = false;
+  let activeIndex = 0;
 
-  const setTextState = (showStoryText) => {
-    isShowingStoryText = showStoryText;
-    document.documentElement.style.setProperty("--hero-copy-opacity", showStoryText ? "0" : "1");
-    document.documentElement.style.setProperty("--story-copy-opacity", showStoryText ? "1" : "0");
+  const setTextState = (index) => {
+    activeIndex = index % slides.length;
+    document.documentElement.style.setProperty("--hero-copy-opacity", activeIndex === 0 ? "1" : "0");
+    document.documentElement.style.setProperty("--story-copy-opacity", activeIndex === 1 ? "1" : "0");
+    document.documentElement.style.setProperty("--curator-copy-opacity", activeIndex === 2 ? "1" : "0");
   };
 
   const revealStoryTextOnScroll = () => {
-    if (window.scrollY > 24) {
-      setTextState(true);
+    if (window.scrollY > 24 && activeIndex === 0) {
+      setTextState(1);
     }
   };
 
-  setTextState(false);
+  setTextState(0);
   window.setInterval(() => {
-    setTextState(!isShowingStoryText);
+    setTextState(activeIndex + 1);
   }, textChangeDelay);
   window.addEventListener("scroll", revealStoryTextOnScroll, { passive: true });
 }
