@@ -1031,9 +1031,13 @@ async function loadLocalMusic() {
   } catch {
     files = [];
   }
-  if (!files.length) files = await getRemoteAudioManifestFiles();
-  if (!files.length) files = getAudioManifestFiles();
-  files = preferWebAudioFiles(normalizeAudioManifestFiles(files));
+  const remoteFiles = await getRemoteAudioManifestFiles();
+  const manifestFiles = getAudioManifestFiles();
+  files = preferWebAudioFiles(normalizeAudioManifestFiles([
+    ...files,
+    ...remoteFiles,
+    ...manifestFiles,
+  ]));
   state.localAudioFiles = files;
 }
 

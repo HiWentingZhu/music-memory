@@ -1135,7 +1135,7 @@ function ensureHomepageMemoryControlFrame() {
     });
     postYearPlaybackStates();
   });
-  frame.src = "control.html?year=2022&embed=memory&preload=1&v=audio-output-1";
+  frame.src = "control.html?year=2022&embed=memory&preload=1&v=audio-merge-2";
   document.body.append(frame);
   return frame;
 }
@@ -1203,7 +1203,7 @@ function enterRoomFromHomepage(year) {
     }
   };
   visibleFrame.addEventListener("load", syncVisibleControl, { once: true });
-  visibleFrame.src = `control.html?year=${year}&embed=memory${shouldAutoplay ? "&autoplay=1" : ""}&v=audio-output-1`;
+  visibleFrame.src = `control.html?year=${year}&embed=memory${shouldAutoplay ? "&autoplay=1" : ""}&v=audio-merge-2`;
 }
 
 function initHomepageOverviewSpacing() {
@@ -1895,7 +1895,7 @@ function renderMemoryControlFrame() {
     }
   }, { once: true });
   const resetPlayback = isPageRefresh() ? "&resetPlayback=1" : "";
-  frame.src = `control.html?year=${state.selectedYear}&embed=memory${resetPlayback}&v=audio-output-1`;
+  frame.src = `control.html?year=${state.selectedYear}&embed=memory${resetPlayback}&v=audio-merge-2`;
 }
 
 function bindRoomYearNavigation() {
@@ -1983,7 +1983,7 @@ function setControlFrameYear(year, options = {}) {
     postYearPlaybackStates();
     if (options.autoplay) startYearControlMusic();
   }, { once: true });
-  frame.src = `control.html?year=${year}&embed=memory${autoplay}&v=audio-output-1`;
+  frame.src = `control.html?year=${year}&embed=memory${autoplay}&v=audio-merge-2`;
 }
 
 function roomBottomActionsMarkup() {
