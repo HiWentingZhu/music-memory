@@ -1664,6 +1664,7 @@ function updateRoomShell(room) {
   document.body.style.setProperty("--room-bg-image", `url("${room.background}")`);
   setText("#roomTitle", room.title);
   setText("#roomSummary", room.summary);
+  setText("#roomAiYear", String(state.selectedYear));
   document.querySelector("#personaTags")?.replaceChildren(...room.tags.map((tag) => {
     const item = document.createElement("span");
     item.textContent = tag;
