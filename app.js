@@ -2043,15 +2043,59 @@ function getMusicDailyDemoRows(entry) {
 }
 
 function buildMusicDailyBilingualPairs(zhText, enText) {
-  const enWords = String(enText || "").trim().split(/\s+/).filter(Boolean);
-  const targetCount = Math.max(6, Math.min(8, Math.ceil(enWords.length / 10) || 6));
-  const zhLines = splitTextIntoBalancedLines(String(zhText || ""), targetCount, { mode: "zh" });
+  const zhLines = splitChineseDailyLines(String(zhText || ""));
+  const targetCount = Math.max(1, zhLines.length);
   const enLines = splitTextIntoBalancedLines(String(enText || ""), targetCount, { mode: "en" });
-  const rowCount = Math.max(zhLines.length, enLines.length);
+  const rowCount = zhLines.length || enLines.length;
   return Array.from({ length: rowCount }, (_, index) => ({
     zh: zhLines[index] || "",
     en: enLines[index] || "",
   })).filter((row) => row.zh.trim() && row.en.trim());
+}
+
+function splitChineseDailyLines(text) {
+  const cleaned = String(text || "")
+    .replace(/\s*(\uFF08\u91CD\u9022\u4E8E\d{4}\uFF09)\s*/g, "\n$1")
+    .replace(/[ \t]+/g, " ")
+    .trim();
+  if (!cleaned) return [];
+  const majorPunctuation = new Set(["\u3002", "\uFF01", "\uFF1F", "\uFF1B", "!", "?", ";"]);
+  const units = [];
+  let buffer = "";
+  [...cleaned].forEach((char) => {
+    if (char === "\n") {
+      if (buffer.trim()) units.push(buffer.trim());
+      buffer = "";
+      return;
+    }
+    buffer += char;
+    if (majorPunctuation.has(char)) {
+      units.push(buffer.trim());
+      buffer = "";
+    }
+  });
+  if (buffer.trim()) units.push(buffer.trim());
+  return mergeSemanticLines(units, 8);
+}
+
+function mergeSemanticLines(units, maxLines) {
+  const cleanUnits = units.map((unit) => String(unit || "").trim()).filter(Boolean);
+  if (cleanUnits.length <= maxLines) return cleanUnits;
+  const totalLength = cleanUnits.reduce((sum, unit) => sum + [...unit].length, 0);
+  const targetLength = Math.max(1, Math.ceil(totalLength / maxLines));
+  const lines = [];
+  let current = "";
+  cleanUnits.forEach((unit) => {
+    const nextLength = [...`${current}${unit}`].length;
+    if (current && lines.length < maxLines - 1 && nextLength > targetLength) {
+      lines.push(current);
+      current = unit;
+    } else {
+      current = `${current}${unit}`;
+    }
+  });
+  if (current) lines.push(current);
+  return lines;
 }
 
 function splitTextIntoBalancedLines(text, targetCount, options = {}) {
@@ -2065,33 +2109,7 @@ function splitTextIntoBalancedLines(text, targetCount, options = {}) {
       .filter(Boolean);
   }
 
-  const chars = [...cleaned];
-  const lineCount = Math.max(1, Math.min(targetCount, chars.length));
-  const preferredLength = Math.ceil(chars.length / lineCount);
-  const lines = [];
-  let cursor = 0;
-  for (let index = 0; index < lineCount; index += 1) {
-    const remainingLines = lineCount - index;
-    const remainingChars = chars.length - cursor;
-    let take = Math.ceil(remainingChars / remainingLines);
-    const softEnd = findSoftChineseLineEnd(chars, cursor, Math.max(8, preferredLength - 5), Math.min(remainingChars, preferredLength + 7));
-    if (softEnd > cursor) take = softEnd - cursor;
-    lines.push(chars.slice(cursor, cursor + take).join("").trim());
-    cursor += take;
-  }
-  if (cursor < chars.length) {
-    lines[lines.length - 1] = `${lines[lines.length - 1]}${chars.slice(cursor).join("")}`.trim();
-  }
-  return lines.filter(Boolean);
-}
-
-function findSoftChineseLineEnd(chars, start, minTake, maxTake) {
-  const punctuation = new Set(["。", "！", "？", "；", "，", "、", ",", ";", "!", "?"]);
-  const upper = Math.min(chars.length, start + maxTake);
-  for (let index = upper - 1; index >= start + minTake; index -= 1) {
-    if (punctuation.has(chars[index])) return index + 1;
-  }
-  return -1;
+  return splitChineseDailyLines(cleaned);
 }
 
 function renderMusicDailyDemoRows(rows) {
