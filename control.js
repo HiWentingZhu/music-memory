@@ -1667,6 +1667,7 @@ function renderSongList() {
         } else {
           syncAudioSource();
           render();
+          saveControlPlaybackState();
         }
       });
     }

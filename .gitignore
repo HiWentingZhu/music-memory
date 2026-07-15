@@ -12,6 +12,7 @@ output/*
 !output/artist-image-manifest.js
 !output/artist-info-manifest.js
 !output/artist-info-source-of-truth-v1.csv
+!output/music-daily-manifest.js
 tools/ffmpeg/
 tools/ffmpeg-cache/
 tools/blender-portable/

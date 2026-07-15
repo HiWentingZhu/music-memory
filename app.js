@@ -24,6 +24,9 @@ const LAST_ROOM_YEAR_KEY = "linger:last-room-year";
 const HOMEPAGE_AUDIO_READY_EVENT = "linger:homepageready";
 const HOMEPAGE_INTRO_DONE_EVENT = "linger:homeintrodone";
 const HOMEPAGE_LAYOUT_REFRESH_EVENT = "linger:homepagelayoutrefresh";
+const MUSIC_DAILY_ZH_CHAR_MS = 150;
+const MUSIC_DAILY_ROW_PAUSE_MS = 520;
+const MUSIC_DAILY_MIN_ROW_DURATION_MS = 520;
 const HOMEPAGE_MUSIC_MAX_GAIN = 0.20;
 const HOMEPAGE_DEFAULT_VOLUME = 50;
 const YEAR_MUSIC_MAX_GAIN = 0.20;
@@ -41,6 +44,10 @@ const SOFT_HOMEPAGE_SONGS = [
   "i forgot that you existed",
   "lover",
 ];
+function u(value) {
+  return String(value).replace(/\\u([\dA-Fa-f]{4})/g, (_, code) => String.fromCharCode(parseInt(code, 16)));
+}
+
 const TREBLE_CURSOR_ASSET = "assets/cursor/treble-note-clay-cutout-bright.png";
 const TREBLE_CURSOR_TRAIL_ASSETS = [
   "single-note-dark.png",
@@ -150,6 +157,12 @@ const state = {
   roomPendingMusicStart: false,
   roomRestoreTime: 0,
   roomLastPlaybackSaveAt: 0,
+  dailyDemoPlacement: "right",
+  dailyDemoRowIndex: 0,
+  dailyDemoRunning: false,
+  dailyDemoPaused: false,
+  dailyDemoTimers: [],
+  dailyDemoStartedKey: "",
   whyMusicPlaying: false,
   whyAutoplayBlocked: false,
   applyingSharedPlayState: false,
@@ -972,6 +985,7 @@ function handleYearParentCommand(message) {
     renderRoomMusicPlayer();
     postParentRoomPlaybackState();
     saveRoomPlaybackState({ force: true });
+    restartMusicDailyDemoForCurrentTrack();
     ensureAudibleSoundPreference();
     startRoomMusicAudio();
     return;
@@ -1011,14 +1025,22 @@ function postMusicFrameMessage(message) {
 function storeYearPlaybackState(data) {
   const year = Number(data?.year);
   if (!YEARS.includes(year)) return;
+  const savedIndex = Math.max(0, Number(data.index) || 0);
   try {
     window.sessionStorage.setItem(`${YEAR_PLAYBACK_KEY_PREFIX}${year}`, JSON.stringify({
-      index: Number(data.index) || 0,
+      index: savedIndex,
       time: Math.max(0, Number(data.time) || 0),
       playing: Boolean(data.playing),
     }));
   } catch {
     // Storage can be unavailable; the in-iframe copy remains the fallback.
+  }
+  if (document.body.dataset.page === "room" && year === state.selectedYear && savedIndex !== state.roomMusicIndex) {
+    const tracks = getRoomMusicTracks();
+    state.roomMusicIndex = tracks.length ? Math.max(0, Math.min(savedIndex, tracks.length - 1)) : savedIndex;
+    state.roomRestoreTime = 0;
+    renderRoomMusicPlayer();
+    restartMusicDailyDemoForCurrentTrack();
   }
 }
 
@@ -1910,14 +1932,16 @@ function restoreHomepagePlaybackState() {
 function renderRoom(room) {
   const visual = document.querySelector("#zoomRoom");
   if (!visual) return;
+  const musicDailyEnabled = isMusicDailyEnabled();
   visual.innerHTML = `
     <article class="zoom-page">
       <div class="zoom-visual">
-        <div class="room-visual-stack">
+        <div class="room-visual-stack${musicDailyEnabled ? " has-daily-demo daily-placement-overlay" : ""}" id="roomVisualStack">
           <div class="static-room-frame">
             <img src="${room.image}" alt="${escapeHtml(room.title)} space" />
             ${renderRoomLiveLayer(state.selectedYear)}
           </div>
+          ${musicDailyEnabled ? musicDailyDemoMarkup() : ""}
           <section class="memory-control-shell" aria-label="Year music control">
             <iframe
               id="memoryControlFrame"
@@ -1932,6 +1956,294 @@ function renderRoom(room) {
       ${roomBottomActionsMarkup()}
     </article>
   `;
+  if (musicDailyEnabled) {
+    bindMusicDailyDemoControls();
+    window.requestAnimationFrame(() => startMusicDailyDemoTyping({ restart: true }));
+  }
+}
+
+function isMusicDailyEnabled() {
+  return getMusicDailyEntries().some((entry) => Number(entry.year) === state.selectedYear);
+}
+
+function getMusicDailyEntries() {
+  return Array.isArray(window.LINGER_MUSIC_DAILY?.entries) ? window.LINGER_MUSIC_DAILY.entries : [];
+}
+
+function musicDailyDemoMarkup() {
+  return `
+    <aside id="musicDailyDemo" class="music-daily-demo" aria-label="Music Daily">
+      <div id="musicDailyDemoGrid" class="music-daily-demo-grid" aria-live="polite"></div>
+      <div class="daily-demo-notes" aria-hidden="true">
+        <span class="daily-note daily-note-a">&#9834;</span>
+        <span class="daily-note daily-note-b">&#9835;</span>
+        <span class="daily-note daily-note-c">&#9834;</span>
+        <span class="daily-note daily-note-d">&#9835;</span>
+        <span class="daily-note daily-note-e">&#9833;</span>
+        <span class="daily-note daily-note-f">&#9834;</span>
+        <span class="daily-note daily-note-g">&#9835;</span>
+        <span class="daily-note daily-note-h">&#9833;</span>
+      </div>
+    </aside>
+  `;
+}
+
+function bindMusicDailyDemoControls() {
+  const panel = document.querySelector("#musicDailyDemo");
+  if (!panel || panel.dataset.bound === "1") return;
+  panel.dataset.bound = "1";
+}
+
+function setMusicDailyDemoPlacement(placement) {
+  const nextPlacement = ["right", "under", "overlay"].includes(placement) ? placement : "right";
+  state.dailyDemoPlacement = nextPlacement;
+  const stack = document.querySelector("#roomVisualStack");
+  if (stack) {
+    stack.classList.remove("daily-placement-right", "daily-placement-under", "daily-placement-overlay");
+    stack.classList.add(`daily-placement-${nextPlacement}`);
+  }
+  document.querySelectorAll("[data-daily-placement]").forEach((button) => {
+    button.classList.toggle("active", button.dataset.dailyPlacement === nextPlacement);
+  });
+}
+
+function getMusicDailyDemoEntryForCurrentTrack() {
+  const trackRank = state.roomMusicIndex + 1;
+  const id = `${state.selectedYear}-${String(trackRank).padStart(2, "0")}`;
+  return getMusicDailyEntries().find((entry) => entry.id === id)
+    || getMusicDailyEntries().find((entry) => Number(entry.year) === state.selectedYear && Number(entry.rank) === trackRank)
+    || null;
+}
+
+function getMusicDailyDemoRows(entry) {
+  if (!entry) {
+    return [
+      {
+        type: "daily-empty-row",
+        zh: u("\\u8fd9\\u9996\\u6b4c\\u7684 Music Daily \\u8fd8\\u5728\\u6574\\u7406\\u4e2d\\u3002"),
+        en: "This Music Daily is still being prepared.",
+      },
+    ];
+  }
+  const track = getCurrentRoomMusicTrack();
+  const titleZh = entry.songTitle || track?.title || "";
+  const artistZh = entry.artist || track?.artist || "";
+  const titleEn = entry.songTitleEn || getLocalTrackEnglishTitle(titleZh) || titleZh;
+  const artistEn = entry.artistEn || (hasChineseText(artistZh) ? artistZh : getDisplayArtist(artistZh));
+  const dailyRows = buildMusicDailyBilingualPairs(entry.dailyZh || "", entry.dailyEn || "");
+  return [
+    { type: "daily-title-row", zh: `${titleZh} - ${artistZh}`.trim(), en: `${titleEn} - ${artistEn}`.trim() },
+    { type: "daily-year-row", zh: `${entry.year} - No.${entry.rank}`, en: `${entry.year} - No.${entry.rank}` },
+    ...dailyRows.map((pair) => ({
+      type: "daily-body-row",
+      zh: pair.zh,
+      en: pair.en,
+    })),
+  ];
+}
+
+function buildMusicDailyBilingualPairs(zhText, enText) {
+  const enWords = String(enText || "").trim().split(/\s+/).filter(Boolean);
+  const targetCount = Math.max(6, Math.min(8, Math.ceil(enWords.length / 10) || 6));
+  const zhLines = splitTextIntoBalancedLines(String(zhText || ""), targetCount, { mode: "zh" });
+  const enLines = splitTextIntoBalancedLines(String(enText || ""), targetCount, { mode: "en" });
+  const rowCount = Math.max(zhLines.length, enLines.length);
+  return Array.from({ length: rowCount }, (_, index) => ({
+    zh: zhLines[index] || "",
+    en: enLines[index] || "",
+  })).filter((row) => row.zh.trim() && row.en.trim());
+}
+
+function splitTextIntoBalancedLines(text, targetCount, options = {}) {
+  const cleaned = String(text || "").replace(/\s+/g, " ").trim();
+  if (!cleaned) return [];
+  if (options.mode === "en") {
+    const words = cleaned.split(/\s+/).filter(Boolean);
+    const lineCount = Math.max(1, Math.min(targetCount, words.length));
+    const perLine = Math.ceil(words.length / lineCount);
+    return Array.from({ length: lineCount }, (_, index) => words.slice(index * perLine, (index + 1) * perLine).join(" "))
+      .filter(Boolean);
+  }
+
+  const chars = [...cleaned];
+  const lineCount = Math.max(1, Math.min(targetCount, chars.length));
+  const preferredLength = Math.ceil(chars.length / lineCount);
+  const lines = [];
+  let cursor = 0;
+  for (let index = 0; index < lineCount; index += 1) {
+    const remainingLines = lineCount - index;
+    const remainingChars = chars.length - cursor;
+    let take = Math.ceil(remainingChars / remainingLines);
+    const softEnd = findSoftChineseLineEnd(chars, cursor, Math.max(8, preferredLength - 5), Math.min(remainingChars, preferredLength + 7));
+    if (softEnd > cursor) take = softEnd - cursor;
+    lines.push(chars.slice(cursor, cursor + take).join("").trim());
+    cursor += take;
+  }
+  if (cursor < chars.length) {
+    lines[lines.length - 1] = `${lines[lines.length - 1]}${chars.slice(cursor).join("")}`.trim();
+  }
+  return lines.filter(Boolean);
+}
+
+function findSoftChineseLineEnd(chars, start, minTake, maxTake) {
+  const punctuation = new Set(["。", "！", "？", "；", "，", "、", ",", ";", "!", "?"]);
+  const upper = Math.min(chars.length, start + maxTake);
+  for (let index = upper - 1; index >= start + minTake; index -= 1) {
+    if (punctuation.has(chars[index])) return index + 1;
+  }
+  return -1;
+}
+
+function renderMusicDailyDemoRows(rows) {
+  const grid = document.querySelector("#musicDailyDemoGrid");
+  if (!grid) return [];
+  grid.replaceChildren(...rows.map((row, index) => {
+    const wrapper = document.createElement("div");
+    wrapper.className = `daily-demo-line ${row.type}`;
+    wrapper.dataset.dailyRowIndex = String(index);
+
+    const zh = document.createElement("div");
+    zh.className = "daily-demo-zh";
+    zh.dataset.full = row.zh;
+    zh.textContent = "";
+
+    const en = document.createElement("div");
+    en.className = "daily-demo-en";
+    en.dataset.full = row.en;
+    en.textContent = "";
+
+    wrapper.append(zh, en);
+    return wrapper;
+  }));
+  return [...grid.querySelectorAll(".daily-demo-line")];
+}
+
+function clearMusicDailyDemoTimers() {
+  state.dailyDemoTimers.forEach((timer) => window.clearTimeout(timer));
+  state.dailyDemoTimers = [];
+}
+
+function setMusicDailyDemoTimer(callback, delay) {
+  const timer = window.setTimeout(callback, delay);
+  state.dailyDemoTimers.push(timer);
+  return timer;
+}
+
+function startMusicDailyDemoTyping(options = {}) {
+  if (!isMusicDailyEnabled()) return;
+  const entry = getMusicDailyDemoEntryForCurrentTrack();
+  const key = entry?.id || `empty-${state.selectedYear}-${state.roomMusicIndex + 1}`;
+  if (!options.restart && key === state.dailyDemoStartedKey && state.dailyDemoRunning) return;
+
+  clearMusicDailyDemoTimers();
+  document.querySelector("#musicDailyDemo")?.classList.remove("is-complete", "is-paused");
+  state.dailyDemoStartedKey = key;
+  state.dailyDemoRowIndex = 0;
+  state.dailyDemoPaused = false;
+  state.dailyDemoRunning = true;
+
+  const rows = getMusicDailyDemoRows(entry);
+  const renderedRows = renderMusicDailyDemoRows(rows);
+  const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+  if (reducedMotion) {
+    renderedRows.forEach((row) => {
+      row.querySelector(".daily-demo-zh").textContent = row.querySelector(".daily-demo-zh").dataset.full;
+      row.querySelector(".daily-demo-en").textContent = row.querySelector(".daily-demo-en").dataset.full;
+      row.classList.add("done");
+    });
+    state.dailyDemoRunning = false;
+    return;
+  }
+  typeMusicDailyDemoRow(renderedRows, 0);
+}
+
+function restartMusicDailyDemoForCurrentTrack() {
+  if (!isMusicDailyEnabled()) return;
+  startMusicDailyDemoTyping({ restart: true });
+}
+
+function typeMusicDailyDemoRow(rows, rowIndex) {
+  if (!state.dailyDemoRunning || state.dailyDemoPaused) return;
+  if (rowIndex >= rows.length) {
+    state.dailyDemoRunning = false;
+    document.querySelector("#musicDailyDemo")?.classList.add("is-complete");
+    return;
+  }
+
+  state.dailyDemoRowIndex = rowIndex;
+  const row = rows[rowIndex];
+  const zh = row.querySelector(".daily-demo-zh");
+  const en = row.querySelector(".daily-demo-en");
+  const zhChars = [...(zh.dataset.full || "")];
+  const enWords = String(en.dataset.full || "").trim().split(/\s+/).filter(Boolean);
+  const duration = Math.max(zhChars.length * MUSIC_DAILY_ZH_CHAR_MS, MUSIC_DAILY_MIN_ROW_DURATION_MS);
+  const enWordMs = enWords.length ? duration / enWords.length : duration;
+
+  row.classList.add("active");
+  zh.classList.add("typing-cursor");
+  en.classList.add("typing-cursor");
+  zh.textContent = "";
+  en.textContent = "";
+
+  zhChars.forEach((_, index) => {
+    setMusicDailyDemoTimer(() => {
+      if (!state.dailyDemoRunning || state.dailyDemoPaused) return;
+      zh.textContent = zhChars.slice(0, index + 1).join("");
+    }, index * MUSIC_DAILY_ZH_CHAR_MS);
+  });
+
+  enWords.forEach((_, index) => {
+    setMusicDailyDemoTimer(() => {
+      if (!state.dailyDemoRunning || state.dailyDemoPaused) return;
+      en.textContent = enWords.slice(0, index + 1).join(" ");
+    }, index * enWordMs);
+  });
+
+  setMusicDailyDemoTimer(() => {
+    if (!state.dailyDemoRunning || state.dailyDemoPaused) return;
+    zh.textContent = zh.dataset.full || "";
+    en.textContent = en.dataset.full || "";
+    zh.classList.remove("typing-cursor");
+    en.classList.remove("typing-cursor");
+    row.classList.remove("active");
+    row.classList.add("done");
+    setMusicDailyDemoTimer(() => typeMusicDailyDemoRow(rows, rowIndex + 1), MUSIC_DAILY_ROW_PAUSE_MS);
+  }, duration + 60);
+}
+
+function pauseMusicDailyDemoTyping() {
+  if (!isMusicDailyEnabled() || !state.dailyDemoRunning) return;
+  state.dailyDemoPaused = true;
+  clearMusicDailyDemoTimers();
+  document.querySelector("#musicDailyDemo")?.classList.add("is-paused");
+}
+
+function resumeMusicDailyDemoTyping() {
+  if (!isMusicDailyEnabled() || !state.dailyDemoPaused) return;
+  state.dailyDemoPaused = false;
+  document.querySelector("#musicDailyDemo")?.classList.remove("is-paused");
+  const rows = [...document.querySelectorAll("#musicDailyDemoGrid .daily-demo-line")];
+  if (rows.length) {
+    typeMusicDailyDemoRow(rows, state.dailyDemoRowIndex);
+  } else {
+    startMusicDailyDemoTyping({ restart: true });
+  }
+}
+
+function removeMusicDailyDemoPanel() {
+  clearMusicDailyDemoTimers();
+  state.dailyDemoRunning = false;
+  state.dailyDemoPaused = false;
+  state.dailyDemoStartedKey = "";
+  document.querySelector("#musicDailyDemo")?.remove();
+  const stack = document.querySelector("#roomVisualStack");
+  if (!stack) return;
+  stack.classList.remove(
+    "has-daily-demo",
+    "daily-placement-right",
+    "daily-placement-under",
+    "daily-placement-overlay",
+  );
 }
 
 function renderMemoryControlFrame() {
@@ -1983,7 +2295,9 @@ function navigateRoomYear(year, options = {}) {
   state.roomRestoreTime = 0;
   const room = ROOM_INFO[year] || ROOM_INFO[2022];
   updateRoomShell(room);
+  if (!isMusicDailyEnabled()) removeMusicDailyDemoPanel();
   renderRoomMusicPlayer();
+  restartMusicDailyDemoForCurrentTrack();
 
   if (options.push !== false) {
     safeHistoryPushState(`room.html?year=${year}`);
@@ -2338,6 +2652,11 @@ async function startRoomMusicAudio() {
     state.roomMusicPlaying = true;
     state.roomPendingMusicStart = false;
     roomAudio.muted = !wantsAudiblePlayback;
+    if (state.dailyDemoPaused) {
+      resumeMusicDailyDemoTyping();
+    } else {
+      startMusicDailyDemoTyping();
+    }
   } catch {
     state.roomMusicPlaying = false;
     roomAudio.muted = !isActiveSoundEnabled();
@@ -2350,6 +2669,7 @@ async function startRoomMusicAudio() {
 function stopRoomMusicAudio() {
   if (roomAudio && !roomAudio.paused) roomAudio.pause();
   state.roomMusicPlaying = false;
+  pauseMusicDailyDemoTyping();
   postParentRoomPlaybackState();
   saveRoomPlaybackState({ force: true });
 }
@@ -2367,6 +2687,7 @@ function toggleRoomMusicPlayback() {
 function restartRoomMusicTrack() {
   if (!roomAudio) return;
   roomAudio.currentTime = 0;
+  restartMusicDailyDemoForCurrentTrack();
   if (state.roomMusicPlaying) startRoomMusicAudio();
   renderRoomMusicPlayer();
   postParentRoomPlaybackState();
@@ -2380,6 +2701,7 @@ function moveRoomMusicTrack(direction) {
   stopRoomMusicAudio();
   state.roomMusicIndex = getNextRoomMusicIndex(direction, tracks, { manual: true });
   state.roomRestoreTime = 0;
+  restartMusicDailyDemoForCurrentTrack();
   renderRoomMusicPlayer();
   postParentRoomPlaybackState();
   saveRoomPlaybackState({ force: true });
@@ -2394,6 +2716,7 @@ function handleRoomMusicEnded() {
   } else {
     state.roomMusicIndex = getNextRoomMusicIndex(1, tracks);
   }
+  restartMusicDailyDemoForCurrentTrack();
   renderRoomMusicPlayer();
   postParentRoomPlaybackState();
   saveRoomPlaybackState({ force: true });
